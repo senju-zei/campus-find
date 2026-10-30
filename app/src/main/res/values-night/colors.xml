@@ -23,4 +23,15 @@
 
     <color name="launcher_background">@color/accent</color>
     <color name="launcher_glyph">@color/on_accent</color>
+
+    <!-- Item colors (dark theme). -->
+    <color name="item_black">#D6D4CC</color>
+    <color name="item_white">#ECEBE6</color>
+    <color name="item_gray">#A8A69E</color>
+    <color name="item_blue">#8FB3E8</color>
+    <color name="item_red">#E8968E</color>
+    <color name="item_green">#93C79D</color>
+    <color name="item_yellow">#E6C46E</color>
+    <color name="item_brown">#C9A07E</color>
+    <color name="item_pink">#E9A6C1</color>
 </resources>

@@ -61,6 +61,10 @@ data class Item(
     val isbn: String?,
     val bookAuthors: String?,
     val coverUrl: String?,
+    /** Color key from Constants.COLORS, or null. Tints the category icon. */
+    val color: String?,
+    /** Brand or model, e.g. "Casio fx-991ES". */
+    val brand: String?,
     /** Null until a clerk marks the item TURNED_IN. Decides where a reject goes. */
     val turnedInAt: Long?,
     val createdAt: Long,
@@ -85,6 +89,8 @@ data class Item(
                 isbn = str("isbn"),
                 bookAuthors = str("bookAuthors"),
                 coverUrl = str("coverUrl"),
+                color = str("color"),
+                brand = str("brand"),
                 turnedInAt = long("turnedInAt"),
                 createdAt = long("createdAt") ?: 0L,
                 updatedAt = long("updatedAt"),
@@ -105,6 +111,8 @@ data class ItemDraft(
     val isbn: String?,
     val bookAuthors: String?,
     val coverUrl: String?,
+    val color: String? = null,
+    val brand: String? = null,
 )
 
 data class Claim(

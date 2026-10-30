@@ -108,6 +108,13 @@ class ItemDetailFragment : Fragment() {
         }
         binding.description.text = item.publicDescription?.takeIf { it.isNotBlank() } ?: none
 
+        val colorLabel = ItemUi.colorLabel(context, item.color)
+        binding.colorRow.visibleIf(colorLabel != null)
+        binding.color.text = colorLabel
+        binding.brandRow.visibleIf(!item.brand.isNullOrBlank())
+        binding.brand.text = item.brand
+        binding.seeAtOffice.visibleIf(item.status == ItemStatus.TURNED_IN)
+
         val isBook = item.isbn != null || item.bookAuthors != null
         binding.bookFields.visibleIf(isBook)
         binding.authors.text = item.bookAuthors ?: none

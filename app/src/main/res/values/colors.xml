@@ -25,4 +25,16 @@
     <!-- Launcher icon and splash icon circle. -->
     <color name="launcher_background">@color/accent</color>
     <color name="launcher_glyph">@color/on_accent</color>
+
+    <!-- Item colors: tint for category icons and color dots. "white" and "black" are
+         shifted so they stay visible on the light and dark backgrounds. -->
+    <color name="item_black">#2B2B2B</color>
+    <color name="item_white">#B9B6AC</color>
+    <color name="item_gray">#7E7C76</color>
+    <color name="item_blue">#3B6FB6</color>
+    <color name="item_red">#B8433A</color>
+    <color name="item_green">#3E7D4A</color>
+    <color name="item_yellow">#B8871A</color>
+    <color name="item_brown">#7A5230</color>
+    <color name="item_pink">#C46A8E</color>
 </resources>

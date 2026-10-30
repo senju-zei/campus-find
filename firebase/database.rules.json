@@ -21,6 +21,8 @@
         "publicDescription": { ".validate": "newData.isString() && newData.val().length <= 300" },
         "isbn": { ".validate": "newData.isString() && newData.val().length <= 13" },
         "bookAuthors": { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "color": { ".validate": "newData.isString() && newData.val().matches(/^(black|white|gray|blue|red|green|yellow|brown|pink|other)$/)" },
+        "brand": { ".validate": "newData.isString() && newData.val().length <= 60" },
         "coverUrl": { ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/covers\\.openlibrary\\.org\\/.*$/)" },
         "type": { ".validate": "true" },
         "postedBy": { ".validate": "true" },

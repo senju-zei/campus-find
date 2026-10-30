@@ -19,6 +19,10 @@ object Constants {
     )
     const val CATEGORY_BOOK = "Book"
 
+    /** Stored color keys. Same order as R.array.item_colors; must match the rules regex. */
+    val COLORS = listOf("black", "white", "gray", "blue", "red", "green", "yellow", "brown", "pink", "other")
+    const val COLOR_OTHER = "other"
+
     const val NAME_MAX = 60
     const val PASSWORD_MIN = 6
     const val TITLE_MAX = 100
@@ -26,6 +30,7 @@ object Constants {
     const val PUBLIC_DESCRIPTION_MAX = 300
     const val HIDDEN_DETAIL_MAX = 300
     const val BOOK_AUTHORS_MAX = 200
+    const val BRAND_MAX = 60
     const val CLAIM_DETAILS_MIN = 10
     const val CLAIM_DETAILS_MAX = 500
     const val CLAIM_OPTIONAL_MAX = 200

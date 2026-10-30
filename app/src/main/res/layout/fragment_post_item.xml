@@ -78,6 +78,45 @@
                 app:simpleItems="@array/categories" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:text="@string/field_color"
+            android:textAppearance="@style/TextAppearance.CampusFind.Small.Medium" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/colorGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true" />
+        </HorizontalScrollView>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/brandLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_2"
+            android:hint="@string/field_brand"
+            app:counterEnabled="true"
+            app:counterMaxLength="60"
+            app:helperText="@string/hint_brand"
+            app:helperTextEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/brandInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Book only: ISBN look-up fills title, authors and cover. -->
         <LinearLayout
             android:id="@+id/bookSection"

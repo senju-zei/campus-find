@@ -94,6 +94,38 @@
             style="@style/Widget.CampusFind.FieldValue" />
 
         <LinearLayout
+            android:id="@+id/colorRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Widget.CampusFind.FieldLabel"
+                android:text="@string/field_color" />
+
+            <TextView
+                android:id="@+id/color"
+                style="@style/Widget.CampusFind.FieldValue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/brandRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Widget.CampusFind.FieldLabel"
+                android:text="@string/field_brand" />
+
+            <TextView
+                android:id="@+id/brand"
+                style="@style/Widget.CampusFind.FieldValue" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/bookFields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,6 +148,16 @@
                 android:id="@+id/isbn"
                 style="@style/Widget.CampusFind.FieldValue" />
         </LinearLayout>
+
+        <!-- Turned-in items: the owner can look at the real item before claiming. -->
+        <TextView
+            android:id="@+id/seeAtOffice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:text="@string/label_see_at_office"
+            android:textAppearance="@style/TextAppearance.CampusFind.Body.Muted"
+            android:visibility="gone" />
 
         <!-- The signed-in student's own claim on this item, if any. -->
         <LinearLayout

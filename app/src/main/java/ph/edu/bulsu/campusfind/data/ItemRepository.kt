@@ -62,6 +62,8 @@ class ItemRepository(private val root: DatabaseReference) {
             putIfNotBlank("isbn", draft.isbn?.let(Isbn::normalize))
             putIfNotBlank("bookAuthors", draft.bookAuthors)
             putIfNotBlank("coverUrl", draft.coverUrl)
+            putIfNotBlank("color", draft.color)
+            putIfNotBlank("brand", draft.brand)
             // turnedInAt is left out until a clerk marks the item turned in.
             put("createdAt", ServerValue.TIMESTAMP)
             put("updatedAt", ServerValue.TIMESTAMP)

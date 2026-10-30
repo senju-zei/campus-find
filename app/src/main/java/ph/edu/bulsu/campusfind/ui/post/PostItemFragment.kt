@@ -9,7 +9,10 @@ import androidx.annotation.ArrayRes
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import android.content.res.ColorStateList
+import androidx.core.content.ContextCompat
 import coil.load
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import ph.edu.bulsu.campusfind.R
@@ -19,6 +22,7 @@ import ph.edu.bulsu.campusfind.domain.Isbn
 import ph.edu.bulsu.campusfind.domain.TextRules
 import ph.edu.bulsu.campusfind.model.ItemDraft
 import ph.edu.bulsu.campusfind.model.ItemType
+import ph.edu.bulsu.campusfind.ui.common.ItemUi
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.check
@@ -56,7 +60,7 @@ class PostItemFragment : Fragment() {
         binding.locationInput.doAfterTextChanged { binding.locationLayout.error = null }
         clearErrorOnEdit(
             binding.titleLayout, binding.roomLayout, binding.descriptionLayout,
-            binding.hiddenLayout, binding.isbnLayout, binding.authorsLayout,
+            binding.hiddenLayout, binding.isbnLayout, binding.authorsLayout, binding.brandLayout,
         )
         binding.isbnInput.doAfterTextChanged { viewModel.onIsbnChanged(it?.toString().orEmpty()) }
         binding.isbnInput.setOnEditorActionListener { _, actionId, _ ->
@@ -69,6 +73,7 @@ class PostItemFragment : Fragment() {
         }
         binding.lookUpButton.setOnClickListener { lookUp() }
         binding.postButton.setOnClickListener { submit() }
+        setUpColors()
         updateSections()
 
         collectWhenStarted(viewModel.state) { state ->
@@ -155,6 +160,9 @@ class PostItemFragment : Fragment() {
             binding.authorsLayout.check(
                 if (TextRules.fitsMax(binding.authorsLayout.text(), Constants.BOOK_AUTHORS_MAX)) null else R.string.error_optional_long,
             ),
+            binding.brandLayout.check(
+                if (TextRules.fitsMax(binding.brandLayout.text(), Constants.BRAND_MAX)) null else R.string.error_room_length,
+            ),
         )
         if (checks.any { !it }) return
 
@@ -170,8 +178,40 @@ class PostItemFragment : Fragment() {
                 isbn = isbn.ifEmpty { null },
                 bookAuthors = if (isBook) binding.authorsLayout.text() else null,
                 coverUrl = null, // The view model adds the looked-up cover.
+                color = viewModel.color,
+                brand = binding.brandLayout.text(),
             ),
         )
+    }
+
+    /** Optional color chips; the chosen color tints the item's category icon everywhere. */
+    private fun setUpColors() {
+        val context = requireContext()
+        val labels = resources.getStringArray(R.array.item_colors)
+        Constants.COLORS.forEachIndexed { index, key ->
+            val chip = Chip(context).apply {
+                text = labels[index]
+                isCheckable = true
+                isCheckedIconVisible = false
+                chipIcon = ContextCompat.getDrawable(context, R.drawable.dot_color)?.mutate()
+                chipIconTint = ColorStateList.valueOf(ContextCompat.getColor(context, ItemUi.colorRes(key)))
+                isChipIconVisible = key != Constants.COLOR_OTHER
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(resources.getDimension(R.dimen.radius_control))
+                chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.toggle_background)
+                chipStrokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.border))
+                chipStrokeWidth = resources.getDimension(R.dimen.border_width)
+                setTextColor(ContextCompat.getColor(context, R.color.text))
+                isChecked = key == viewModel.color
+                setOnCheckedChangeListener { _, checked ->
+                    if (checked) {
+                        viewModel.color = key
+                    } else if (viewModel.color == key) {
+                        viewModel.color = null
+                    }
+                }
+            }
+            binding.colorGroup.addView(chip)
+        }
     }
 
     /** Maps the chosen dropdown label back to the value stored in the database. */

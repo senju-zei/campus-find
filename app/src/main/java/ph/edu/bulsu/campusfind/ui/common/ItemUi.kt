@@ -1,6 +1,7 @@
 package ph.edu.bulsu.campusfind.ui.common
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.format.DateUtils
 import android.widget.ImageView
 import android.widget.TextView
@@ -9,6 +10,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import coil.dispose
 import coil.load
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.core.Constants
@@ -86,21 +88,63 @@ object ItemUi {
     }
 
     /**
-     * Open Library cover when the item has one, otherwise the DiceBear badge built from the
-     * item id. A cover that fails to load (404 with default=false) falls back to the badge.
+     * Open Library cover when the item has one, otherwise the category icon in the item's color
+     * (owner decision, replacing the DiceBear badge). A cover that fails to load (404 with
+     * default=false) falls back to the icon.
      */
     fun loadPicture(view: ImageView, item: Item, @DimenRes sizeRes: Int) {
-        val badge = badgeUrl(view, item.id, sizeRes)
         val cover = item.coverUrl
         if (cover == null) {
-            view.load(badge) { crossfade(true) }
-        } else {
-            view.load(cover) {
-                crossfade(true)
-                listener(onError = { _, _ -> view.load(badge) { crossfade(true) } })
-            }
+            showCategoryIcon(view, item, sizeRes)
+            return
+        }
+        view.imageTintList = null
+        view.setPadding(0, 0, 0, 0)
+        view.scaleType = ImageView.ScaleType.CENTER_CROP
+        view.load(cover) {
+            crossfade(true)
+            listener(onError = { _, _ -> showCategoryIcon(view, item, sizeRes) })
         }
     }
+
+    private fun showCategoryIcon(view: ImageView, item: Item, @DimenRes sizeRes: Int) {
+        view.dispose()
+        val padding = view.resources.getDimensionPixelSize(sizeRes) / ICON_PADDING_DIVISOR
+        view.setPadding(padding, padding, padding, padding)
+        view.scaleType = ImageView.ScaleType.FIT_CENTER
+        view.setImageResource(categoryIcon(item.category))
+        view.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(view.context, colorRes(item.color)))
+    }
+
+    @DrawableRes
+    fun categoryIcon(category: String?): Int = when (category) {
+        "Book" -> R.drawable.ic_cat_book
+        "Bag" -> R.drawable.ic_cat_bag
+        "ID or card" -> R.drawable.ic_cat_card
+        "Electronics" -> R.drawable.ic_cat_electronics
+        "Clothing" -> R.drawable.ic_cat_clothing
+        "Keys" -> R.drawable.ic_cat_keys
+        else -> R.drawable.ic_cat_other
+    }
+
+    /** Swatch for a stored color key; no color (or "other") uses the accent. */
+    @ColorRes
+    fun colorRes(key: String?): Int = when (key) {
+        "black" -> R.color.item_black
+        "white" -> R.color.item_white
+        "gray" -> R.color.item_gray
+        "blue" -> R.color.item_blue
+        "red" -> R.color.item_red
+        "green" -> R.color.item_green
+        "yellow" -> R.color.item_yellow
+        "brown" -> R.color.item_brown
+        "pink" -> R.color.item_pink
+        else -> R.color.accent
+    }
+
+    /** Display label for a stored color key, from R.array.item_colors. */
+    fun colorLabel(context: Context, key: String?): String? =
+        label(context, key, Constants.COLORS, R.array.item_colors)
 
     fun badgeUrl(view: ImageView, seed: String, @DimenRes sizeRes: Int): String {
         val context = view.context
@@ -111,4 +155,6 @@ object ItemUi {
             sizePx = context.resources.getDimensionPixelSize(sizeRes),
         )
     }
+
+    private const val ICON_PADDING_DIVISOR = 5
 }

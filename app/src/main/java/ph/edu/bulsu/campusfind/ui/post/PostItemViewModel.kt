@@ -47,6 +47,13 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
     private val _events = Channel<PostEvent>(Channel.BUFFERED)
     val events: Flow<PostEvent> = _events.receiveAsFlow()
 
+    /** Chosen color key (Constants.COLORS), kept across rotation. */
+    var color: String?
+        get() = handle[KEY_COLOR]
+        set(value) {
+            handle[KEY_COLOR] = value
+        }
+
     /** The fragment checks the ISBN checksum first, so an invalid ISBN never reaches the network. */
     fun lookUp(isbn: String) {
         if (_state.value.lookingUp) return
@@ -111,5 +118,6 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
     private companion object {
         const val KEY_COVER = "coverUrl"
         const val KEY_ISBN = "lookedUpIsbn"
+        const val KEY_COLOR = "color"
     }
 }

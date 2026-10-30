@@ -192,7 +192,26 @@
     <string name="label_staff_pickup">Approved for %1$s · pickup code %2$s</string>
     <string name="label_other_claims">%1$d claims on this item</string>
 
+    <!-- Item color and brand -->
+    <string name="field_color">Color</string>
+    <string name="field_brand">Brand or model</string>
+    <string name="hint_brand">Optional. For example, Casio fx-991ES.</string>
+    <string name="label_see_at_office">Not sure it is yours? Ask to see it at the CS Office.</string>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
+    <string-array name="item_colors">
+        <item>Black</item>
+        <item>White</item>
+        <item>Gray</item>
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Brown</item>
+        <item>Pink</item>
+        <item>Other</item>
+    </string-array>
+
     <string-array name="locations">
         <item>CS Office</item>
         <item>Laboratory</item>

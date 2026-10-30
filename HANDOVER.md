@@ -38,6 +38,14 @@ Read this first in a new session, together with `Campus_Find.md` (the plan, in t
 - Claimant sees "Your pickup code" on Item detail and My activity; staff see "Approved for X · pickup code" on Item detail.
 - Verified with REST rules checks in the emulator (2 claimants + clerk). Not yet clicked through on a phone.
 
+## Category icons + color + brand: DONE
+- Items without a book cover show a Material Symbols category icon (`ic_cat_*.xml`) tinted with the
+  item color (`ItemUi.loadPicture`); the DiceBear badge is no longer used.
+- New optional item fields `color` (key from `Constants.COLORS`) and `brand` (<= 60); rules updated and
+  **published** (console matches the file, 7431 chars).
+- Post item has color chips and a Brand or model field; Item detail shows Color, Brand, and
+  "Ask to see it at the CS Office" for TURNED_IN items.
+
 ## Owner decisions
 - Keep current library versions until after the demo.
 - **Multiple claims per item** (changes the plan): any student except the finder can claim while the
@@ -47,29 +55,18 @@ Read this first in a new session, together with `Campus_Find.md` (the plan, in t
   (`pickupCode`). Only that claimant and staff can read it (claims are already private).
 
 ## Next, in this order
-1. **Category icons + color + brand (owner approved, start here).** Instead of photos for now.
-   - Category icons: Material Symbols outlined (same SVG to VectorDrawable method as `ic_add.xml`)
-     for Book, Bag, ID or card, Electronics, Clothing, Keys, Other. Shown instead of the DiceBear
-     badge when there is no book cover (Feed rows, Item detail, Claim, staff rows).
-   - Color: optional row of color dots on Post item (black, white, gray, blue, red, green, yellow,
-     brown, pink, other). New item field `color` (stored key, e.g. `blue`); the category icon is tinted
-     with it. Colors go in colors.xml (light and night).
-   - Brand / model: optional text field, new item field `brand`, up to 60 chars. Shown on Item detail.
-   - Rules: add `color` (one of the keys) and `brand` (string <= 60) under `items/$itemId`, update
-     `firebase/database.rules.json`, then **publish in the console** and check it matches the file.
-   - Add "Not sure it's yours? Ask to see it at the CS Office." on Item detail for TURNED_IN items.
-2. Staff cannot approve their own claim (rules: staff write on `claims/$itemId/$claimUid` requires
+1. **Start here.** Staff cannot approve their own claim (rules: staff write on `claims/$itemId/$claimUid` requires
    `$claimUid !== auth.uid`; app hides Approve/Reject on own claim). Owner to confirm: staff may claim.
-3. Turn-in notice on Post item (Found): "Please bring the item to the CS Office", or "I left it somewhere
+2. Turn-in notice on Post item (Found): "Please bring the item to the CS Office", or "I left it somewhere
    else" + "Where is it now?" (new optional item field `heldAt`, <= 100 chars; rules + publish).
    Show it on Item detail and on the staff "To turn in" tab.
-4. Trash / Settled tab (staff only): RETURNED and CLOSED items leave Feed (owner to choose: after 3
+3. Trash / Settled tab (staff only): RETURNED and CLOSED items leave Feed (owner to choose: after 3
    days or immediately), stay in My activity; staff can delete permanently with confirmation, or archive
    (owner to choose). Rules must let staff delete `itemSecrets/{id}` and claims.
-5. Search and filter on Feed (text, category, color, brand), client-side only.
-6. Match suggestions after posting a Lost item (category + location + color, last 14 days).
-7. Polish (tab counts, staff icon badge, how-it-works on Welcome), then Profile page.
-8. Step 7: QA agent (`.claude/agents/qa-tester.md`), unit tests, rules tests in `qa/rules/`.
+4. Search and filter on Feed (text, category, color, brand), client-side only.
+5. Match suggestions after posting a Lost item (category + location + color, last 14 days).
+6. Polish (tab counts, staff icon badge, how-it-works on Welcome), then Profile page.
+7. Step 7: QA agent (`.claude/agents/qa-tester.md`), unit tests, rules tests in `qa/rules/`.
 Later: real item photos (Lost public, Found staff only; compressed in the database or Firebase
 Storage on the Blaze plan), notifications, auto-close.
 
