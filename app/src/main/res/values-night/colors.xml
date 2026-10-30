@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark palette (section 7). Same names as values/colors.xml. -->
+<resources>
+    <color name="background">#181A17</color>
+    <color name="surface">#1F221E</color>
+    <color name="border">#2F332D</color>
+    <color name="text">#ECEBE6</color>
+    <color name="text_muted">#9A9A91</color>
+    <color name="accent">#7FB59E</color>
+    <color name="on_accent">#10201A</color>
+    <color name="accent_tint">#243029</color>
+
+    <color name="chip_neutral_bg">#2A2C28</color>
+    <color name="chip_neutral_text">#B9B8B0</color>
+    <color name="chip_pending_bg">#3A3220</color>
+    <color name="chip_pending_text">#E0C98A</color>
+    <color name="chip_success_bg">#243127</color>
+    <color name="chip_success_text">#A9D2A0</color>
+    <color name="chip_error_bg">#3A2522</color>
+    <color name="chip_error_text">#E3A79F</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="launcher_background">@color/accent</color>
+    <color name="launcher_glyph">@color/on_accent</color>
+</resources>

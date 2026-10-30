@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Text appearances. Weight 500 uses sans-serif-medium so it works on API 24 to 27. -->
+    <style name="TextAppearance.CampusFind" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Small">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">@color/text_muted</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Small.Medium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Body">
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Body.Muted">
+        <item name="android:textColor">@color/text_muted</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Body.Medium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Large">
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Large.Medium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.CampusFind.Title">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Buttons: 8dp radius, flat, sentence case, at least 48dp tall. -->
+    <style name="Widget.CampusFind.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.CampusFind.Control</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="android:textColor">@color/button_filled_text</item>
+        <item name="backgroundTint">@color/button_filled_background</item>
+        <item name="android:minHeight">@dimen/touch_target</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="Widget.CampusFind.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.CampusFind.Control</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="strokeColor">@color/border</item>
+        <item name="strokeWidth">@dimen/border_width</item>
+        <item name="android:minHeight">@dimen/touch_target</item>
+    </style>
+
+    <style name="Widget.CampusFind.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.CampusFind.Control</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:minHeight">@dimen/touch_target</item>
+    </style>
+
+    <style name="ShapeAppearance.CampusFind.Control" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/radius_control</item>
+    </style>
+
+    <!-- Inputs: outlined, 8dp radius, border color until focused. -->
+    <style name="Widget.CampusFind.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">@dimen/radius_control</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_control</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_control</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_control</item>
+        <item name="boxStrokeColor">@color/input_stroke</item>
+        <item name="boxStrokeWidth">@dimen/border_width</item>
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="hintTextColor">@color/accent</item>
+        <item name="android:textColorHint">@color/text_muted</item>
+        <item name="helperTextTextColor">@color/text_muted</item>
+        <item name="hintTextAppearance">@style/TextAppearance.CampusFind.Small</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.CampusFind.Small</item>
+        <item name="errorTextAppearance">@style/TextAppearance.CampusFind.Small</item>
+    </style>
+
+    <!-- Flat top bar, left-aligned title. A 1dp divider view sits under it in the layout. -->
+    <style name="Widget.CampusFind.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/background</item>
+        <item name="titleTextAppearance">@style/TextAppearance.CampusFind.Title</item>
+        <item name="titleTextColor">@color/text</item>
+        <item name="titleCentered">false</item>
+        <item name="navigationIconTint">@color/text_muted</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <!-- Tabs: text with an accent underline. -->
+    <style name="Widget.CampusFind.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="android:background">@color/background</item>
+        <item name="tabIndicatorColor">@color/accent</item>
+        <item name="tabSelectedTextColor">@color/accent</item>
+        <item name="tabTextColor">@color/text_muted</item>
+        <item name="tabTextAppearance">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="Widget.CampusFind.Snackbar" parent="Widget.Material3.Snackbar">
+        <item name="shapeAppearance">@style/ShapeAppearance.CampusFind.Control</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <!-- Non-interactive status and type chips. Background is set per status in code. -->
+    <style name="Widget.CampusFind.StatusChip" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/space_2</item>
+        <item name="android:paddingEnd">@dimen/space_2</item>
+        <item name="android:paddingTop">@dimen/space_1</item>
+        <item name="android:paddingBottom">@dimen/space_1</item>
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:background">@drawable/bg_chip_neutral</item>
+        <item name="android:textColor">@color/chip_neutral_text</item>
+        <item name="android:importantForAccessibility">yes</item>
+    </style>
+
+    <!-- Bordered list row (10dp radius), not a floating card. -->
+    <style name="Widget.CampusFind.Row" parent="">
+        <item name="android:background">@drawable/bg_row</item>
+        <item name="android:foreground">@drawable/fg_row_ripple</item>
+        <item name="android:padding">@dimen/space_3</item>
+        <item name="android:minHeight">@dimen/touch_target</item>
+    </style>
+
+    <style name="Widget.CampusFind.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/border_width</item>
+        <item name="android:background">@color/border</item>
+    </style>
+</resources>

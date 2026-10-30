@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Every Material3 color role is mapped to the section 7 palette, so no default
+         Material colors appear. DynamicColors is never applied. -->
+    <style name="Theme.CampusFind" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">@color/on_accent</item>
+        <item name="colorPrimaryContainer">@color/accent_tint</item>
+        <item name="colorOnPrimaryContainer">@color/accent</item>
+        <item name="colorPrimaryInverse">@color/accent_tint</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/on_accent</item>
+        <item name="colorSecondaryContainer">@color/accent_tint</item>
+        <item name="colorOnSecondaryContainer">@color/accent</item>
+        <item name="colorTertiary">@color/accent</item>
+        <item name="colorOnTertiary">@color/on_accent</item>
+        <item name="colorTertiaryContainer">@color/accent_tint</item>
+        <item name="colorOnTertiaryContainer">@color/accent</item>
+        <item name="colorError">@color/chip_error_text</item>
+        <item name="colorOnError">@color/surface</item>
+        <item name="colorErrorContainer">@color/chip_error_bg</item>
+        <item name="colorOnErrorContainer">@color/chip_error_text</item>
+
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/text</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text</item>
+        <item name="colorSurfaceVariant">@color/background</item>
+        <item name="colorOnSurfaceVariant">@color/text_muted</item>
+        <item name="colorSurfaceInverse">@color/text</item>
+        <item name="colorOnSurfaceInverse">@color/background</item>
+        <item name="colorSurfaceBright">@color/surface</item>
+        <item name="colorSurfaceDim">@color/background</item>
+        <item name="colorSurfaceContainerLowest">@color/surface</item>
+        <item name="colorSurfaceContainerLow">@color/surface</item>
+        <item name="colorSurfaceContainer">@color/surface</item>
+        <item name="colorSurfaceContainerHigh">@color/surface</item>
+        <item name="colorSurfaceContainerHighest">@color/surface</item>
+        <item name="colorOutline">@color/border</item>
+        <item name="colorOutlineVariant">@color/border</item>
+        <!-- The plan asks for colorSurfaceTint=transparent; Material 1.12 has no such theme
+             attribute, so the tonal elevation overlay is switched off directly. -->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">@bool/light_system_bars</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars</item>
+
+        <!-- Type scale: only 12, 14, 16 and 20sp, weights 400 and 500. -->
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.CampusFind.Title</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.CampusFind.Large.Medium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.CampusFind.Large</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.CampusFind.Body</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.CampusFind.Small</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.CampusFind.Body.Medium</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.CampusFind.Small.Medium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.CampusFind.Small.Medium</item>
+
+        <item name="materialButtonStyle">@style/Widget.CampusFind.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.CampusFind.Button.Outlined</item>
+        <item name="borderlessButtonStyle">@style/Widget.CampusFind.Button.Text</item>
+        <item name="textInputStyle">@style/Widget.CampusFind.TextInputLayout</item>
+        <item name="toolbarStyle">@style/Widget.CampusFind.Toolbar</item>
+        <item name="tabStyle">@style/Widget.CampusFind.TabLayout</item>
+        <item name="snackbarStyle">@style/Widget.CampusFind.Snackbar</item>
+    </style>
+
+    <!-- System SplashScreen API, no custom graphic beyond the launcher icon. -->
+    <style name="Theme.CampusFind.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/launcher_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.CampusFind</item>
+    </style>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 4dp grid, 16dp screen margins, 48dp touch targets (section 7). -->
+<resources>
+    <dimen name="space_1">4dp</dimen>
+    <dimen name="space_2">8dp</dimen>
+    <dimen name="space_3">12dp</dimen>
+    <dimen name="space_4">16dp</dimen>
+    <dimen name="space_6">24dp</dimen>
+    <dimen name="space_8">32dp</dimen>
+    <dimen name="screen_margin">16dp</dimen>
+
+    <dimen name="radius_row">10dp</dimen>
+    <dimen name="radius_control">8dp</dimen>
+    <dimen name="radius_chip">4dp</dimen>
+    <dimen name="border_width">1dp</dimen>
+
+    <dimen name="touch_target">48dp</dimen>
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="badge_size_row">48dp</dimen>
+    <dimen name="badge_size_detail">96dp</dimen>
+
+    <!-- The only four text sizes allowed. -->
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_title">20sp</dimen>
+</resources>

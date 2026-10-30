@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- All user-visible text. Plain, short, sentence case, no exclamation marks. -->
+<resources>
+    <string name="app_name">Campus Find</string>
+
+    <!-- Screen titles -->
+    <string name="title_login">Log in</string>
+    <string name="title_register">Create account</string>
+    <string name="title_feed">Campus Find</string>
+    <string name="title_post_item">Post item</string>
+    <string name="title_item_detail">Item</string>
+    <string name="title_claim">Claim item</string>
+    <string name="title_my_activity">My activity</string>
+    <string name="title_staff_dashboard">Staff dashboard</string>
+    <string name="title_review_claim">Review claim</string>
+
+    <!-- Button verbs (section 7) -->
+    <string name="action_log_in">Log in</string>
+    <string name="action_create_account">Create account</string>
+    <string name="action_resend_email">Resend email</string>
+    <string name="action_i_have_verified">I have verified</string>
+    <string name="action_post_item">Post item</string>
+    <string name="action_look_up">Look up</string>
+    <string name="action_claim_item">Claim item</string>
+    <string name="action_submit_claim">Submit claim</string>
+    <string name="action_approve_claim">Approve claim</string>
+    <string name="action_reject_claim">Reject claim</string>
+    <string name="action_mark_turned_in">Mark turned in</string>
+    <string name="action_claim_again">Claim again</string>
+    <string name="action_close_report">Close report</string>
+    <string name="action_change_status">Change status</string>
+    <string name="action_log_out">Log out</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_browse_found">Browse found items</string>
+    <string name="action_go_to_register">Create an account</string>
+    <string name="action_go_to_login">I already have an account</string>
+    <string name="action_navigate_up">Back</string>
+
+    <!-- Top bar icon descriptions -->
+    <string name="cd_post_item">Post item</string>
+    <string name="cd_my_activity">My activity</string>
+    <string name="cd_staff_dashboard">Staff dashboard</string>
+    <string name="cd_more_options">More options</string>
+    <string name="cd_item_badge">Item picture</string>
+
+    <!-- Fields -->
+    <string name="field_name">Full name</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Password</string>
+    <string name="field_type">Type</string>
+    <string name="field_title">Title</string>
+    <string name="field_category">Category</string>
+    <string name="field_location">Location</string>
+    <string name="field_room">Room or spot</string>
+    <string name="field_public_description">Public description</string>
+    <string name="field_hidden_detail">Hidden detail</string>
+    <string name="field_isbn">ISBN</string>
+    <string name="field_book_authors">Authors</string>
+    <string name="field_claim_details">Describe the item</string>
+    <string name="field_when_where">When and where you lost it</string>
+    <string name="field_contact_note">Contact note</string>
+    <string name="field_reject_reason">Reason for rejecting</string>
+
+    <!-- Helper text -->
+    <string name="hint_email_domain">Use your @ms.bulsu.edu.ph or @gmail.com address.</string>
+    <string name="hint_data_stored">We store your name and email to run this College of Science pilot.</string>
+    <string name="hint_hidden_detail">Only the CS Office sees this. Use it to check claims.</string>
+    <string name="hint_claim_details">Mention something only the owner would know. 10 to 500 characters.</string>
+    <string name="hint_optional">Optional</string>
+    <string name="hint_name_permanent">Your name cannot be changed later.</string>
+
+    <!-- Verification -->
+    <string name="verify_notice">Verify your email before you post or claim. Check your inbox and junk folder.</string>
+    <string name="verify_email_sent">Verification email sent to %1$s.</string>
+    <string name="verify_still_unverified">Your email is not verified yet.</string>
+    <string name="verify_email_not_sent">Account created. The email could not be sent. Tap Resend email.</string>
+    <string name="action_use_another_account">Use another account</string>
+    <string name="feed_placeholder">Signed in as %1$s. Items arrive in the next build.</string>
+
+    <!-- Item types -->
+    <string name="type_found">Found</string>
+    <string name="type_lost">Lost</string>
+
+    <!-- Item statuses -->
+    <string name="status_open">Open</string>
+    <string name="status_turned_in">Turned in</string>
+    <string name="status_claim_pending">Claim pending</string>
+    <string name="status_returned">Returned</string>
+    <string name="status_closed">Closed</string>
+
+    <!-- Claim statuses -->
+    <string name="claim_status_pending">Pending</string>
+    <string name="claim_status_approved">Approved</string>
+    <string name="claim_status_rejected">Rejected</string>
+
+    <!-- Tabs -->
+    <string name="tab_found">Found</string>
+    <string name="tab_lost">Lost</string>
+    <string name="tab_posts">Posts</string>
+    <string name="tab_claims">Claims</string>
+
+    <!-- Item detail labels -->
+    <string name="label_posted_by">Posted by %1$s</string>
+    <string name="label_location_room">%1$s, %2$s</string>
+    <string name="label_hidden_detail">Hidden detail: %1$s</string>
+    <string name="label_reject_reason">Reason: %1$s</string>
+    <string name="label_claimant">Claim by %1$s</string>
+    <string name="label_when_where">When and where: %1$s</string>
+    <string name="label_contact_note">Contact: %1$s</string>
+    <string name="label_pickup">Pick up your item at the CS Office.</string>
+
+    <!-- Empty states: one line plus one action -->
+    <string name="empty_found">No found items yet.</string>
+    <string name="empty_lost">No lost items yet.</string>
+    <string name="empty_my_posts">You have not posted anything.</string>
+    <string name="empty_my_claims">You have no claims.</string>
+    <string name="empty_staff_claims">No claims to review.</string>
+    <string name="empty_staff_turn_in">No found items waiting to be turned in.</string>
+
+    <!-- Confirmations -->
+    <string name="msg_item_posted">Item posted.</string>
+    <string name="msg_claim_submitted">Claim submitted. The CS Office will review it.</string>
+    <string name="msg_claim_approved">Claim approved.</string>
+    <string name="msg_claim_rejected">Claim rejected.</string>
+    <string name="msg_marked_turned_in">Marked as turned in.</string>
+    <string name="msg_report_closed">Report closed.</string>
+    <string name="msg_status_changed">Status changed.</string>
+
+    <!-- Book lookup -->
+    <string name="book_not_found">Book not found, fill in manually.</string>
+
+    <!-- Errors: plain and specific -->
+    <string name="error_required">Enter this field.</string>
+    <string name="error_email_format">Enter a valid email address.</string>
+    <string name="error_email_domain">Use a school or Gmail address.</string>
+    <string name="error_password_short">Use at least 6 characters.</string>
+    <string name="error_name_length">Enter 1 to 60 characters.</string>
+    <string name="error_title_length">Enter 1 to 100 characters.</string>
+    <string name="error_description_length">Use 300 characters or fewer.</string>
+    <string name="error_room_length">Use 60 characters or fewer.</string>
+    <string name="error_hidden_detail_length">Enter 1 to 300 characters.</string>
+    <string name="error_claim_short">Enter at least 10 characters.</string>
+    <string name="error_claim_long">Use 500 characters or fewer.</string>
+    <string name="error_optional_long">Use 200 characters or fewer.</string>
+    <string name="error_reject_reason">Enter a reason, up to 200 characters.</string>
+    <string name="error_isbn_invalid">Check the ISBN. It should be 10 or 13 digits.</string>
+    <string name="error_no_connection">No connection. Try again.</string>
+    <string name="error_wrong_password">Wrong email or password.</string>
+    <string name="error_unknown_email">No account uses this email.</string>
+    <string name="error_email_in_use">An account already uses this email.</string>
+    <string name="error_too_many_requests">Too many attempts. Wait a few minutes and try again.</string>
+    <string name="error_permission_denied">This action is not allowed.</string>
+    <string name="error_generic">Something went wrong. Try again.</string>
+
+    <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
+    <string-array name="locations">
+        <item>CS Office</item>
+        <item>Laboratory</item>
+        <item>Classroom</item>
+        <item>Library</item>
+        <item>Canteen</item>
+        <item>Hallway</item>
+        <item>Gym</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="categories">
+        <item>Book</item>
+        <item>Bag</item>
+        <item>ID or card</item>
+        <item>Electronics</item>
+        <item>Clothing</item>
+        <item>Keys</item>
+        <item>Other</item>
+    </string-array>
+</resources>

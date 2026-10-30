@@ -1,0 +1,21 @@
+# Gradle and build output
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+
+# Local config (SDK path, secrets)
+local.properties
+app/google-services.json
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+
+# QA tooling
+qa/**/node_modules/

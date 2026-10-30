@@ -1,0 +1,68 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
+        ".write": "auth != null && auth.uid === $uid && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/)",
+        "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())" },
+        "role": { ".validate": "(!data.exists() && newData.val() === 'student') || data.val() === newData.val()" }
+      }
+    },
+    "items": {
+      ".read": "auth != null",
+      ".indexOn": ["createdAt", "status", "type"],
+      "$itemId": {
+        ".write": "auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && ((!data.exists() && newData.child('postedBy').val() === auth.uid) || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
+        ".validate": "newData.hasChildren(['type', 'title', 'status', 'postedBy', 'postedByName', 'createdAt']) && (newData.child('type').val() === 'LOST' || newData.child('type').val() === 'FOUND') && (data.exists() || newData.child('status').val() === 'OPEN') && newData.child('title').val().length > 0 && newData.child('title').val().length <= 100 && newData.child('postedByName').val() === root.child('users/' + newData.child('postedBy').val() + '/name').val()",
+        "title": { ".validate": "newData.isString()" },
+        "category": { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "location": { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "room": { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "publicDescription": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "isbn": { ".validate": "newData.isString() && newData.val().length <= 13" },
+        "bookAuthors": { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "coverUrl": { ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/covers\\.openlibrary\\.org\\/.*$/)" },
+        "type": { ".validate": "true" },
+        "postedBy": { ".validate": "true" },
+        "postedByName": { ".validate": "true" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "updatedAt": { ".validate": "newData.isNumber()" },
+        "turnedInAt": { ".validate": "newData.isNumber()" },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'OPEN' || newData.val() === 'TURNED_IN' || newData.val() === 'CLAIM_PENDING' || newData.val() === 'RETURNED' || newData.val() === 'CLOSED')",
+          ".write": "auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && ((newData.val() === 'CLAIM_PENDING' && (data.val() === 'OPEN' || data.val() === 'TURNED_IN') && data.parent().child('type').val() === 'FOUND' && data.parent().child('postedBy').val() !== auth.uid && newData.parent().parent().parent().child('claims/' + $itemId + '/' + auth.uid + '/status').val() === 'PENDING') || (newData.val() === 'CLOSED' && data.val() === 'OPEN' && data.parent().child('type').val() === 'LOST' && data.parent().child('postedBy').val() === auth.uid))"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+    "itemSecrets": {
+      "$itemId": {
+        ".read": "auth != null && (root.child('items/' + $itemId + '/postedBy').val() === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
+        ".write": "auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && !data.exists() && newData.parent().parent().child('items/' + $itemId + '/postedBy').val() === auth.uid",
+        ".validate": "newData.hasChild('hiddenDetail') && newData.child('hiddenDetail').val().length >= 1 && newData.child('hiddenDetail').val().length <= 300",
+        "hiddenDetail": { ".validate": "newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    },
+    "claims": {
+      ".read": "auth != null && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
+      "$itemId": {
+        "$claimUid": {
+          ".read": "auth != null && $claimUid === auth.uid",
+          ".write": "(auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && $claimUid === auth.uid && newData.child('claimant').val() === auth.uid && newData.child('status').val() === 'PENDING' && !newData.child('reviewedBy').exists() && !newData.child('rejectReason').exists() && (!data.exists() || data.child('status').val() === 'REJECTED') && root.child('items/' + $itemId + '/type').val() === 'FOUND' && root.child('items/' + $itemId + '/postedBy').val() !== auth.uid && (root.child('items/' + $itemId + '/status').val() === 'OPEN' || root.child('items/' + $itemId + '/status').val() === 'TURNED_IN') && newData.parent().parent().parent().child('items/' + $itemId + '/status').val() === 'CLAIM_PENDING') || (auth != null && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty'))",
+          ".validate": "newData.hasChildren(['claimant', 'claimantName', 'secretDetails', 'status', 'createdAt']) && newData.child('claimant').val() === $claimUid && newData.child('claimantName').val() === root.child('users/' + $claimUid + '/name').val() && newData.child('secretDetails').val().length >= 10 && newData.child('secretDetails').val().length <= 500 && (newData.child('status').val() === 'PENDING' || newData.child('status').val() === 'APPROVED' || newData.child('status').val() === 'REJECTED') && (newData.child('status').val() !== 'REJECTED' || newData.child('rejectReason').exists())",
+          "claimant": { ".validate": "true" },
+          "claimantName": { ".validate": "true" },
+          "secretDetails": { ".validate": "newData.isString()" },
+          "status": { ".validate": "true" },
+          "whenWhere": { ".validate": "newData.isString() && newData.val().length <= 200" },
+          "contactNote": { ".validate": "newData.isString() && newData.val().length <= 200" },
+          "rejectReason": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 200" },
+          "reviewedBy": { ".validate": "newData.isString()" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}
