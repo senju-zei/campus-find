@@ -3,9 +3,11 @@ package ph.edu.bulsu.campusfind.data
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ServerValue
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import ph.edu.bulsu.campusfind.core.DbPaths
 import ph.edu.bulsu.campusfind.domain.Isbn
+import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.model.ItemDraft
 import ph.edu.bulsu.campusfind.model.ItemStatus
@@ -80,7 +82,29 @@ class ItemRepository(private val root: DatabaseReference) {
 
     /** Poster of a LOST item. Only status is written: the rules do not let posters write updatedAt. */
     suspend fun closeLostItem(itemId: String) {
-        items.child(itemId).child("status").setValue(ItemStatus.CLOSED.name).awaitWrite()
+        // updatedAt marks when it settled (the rules allow the poster this one stamp).
+        val base = "${DbPaths.ITEMS}/$itemId"
+        root.updateChildren(
+            mapOf("$base/status" to ItemStatus.CLOSED.name, "$base/updatedAt" to ServerValue.TIMESTAMP),
+        ).awaitWrite()
+    }
+
+    /** Staff. RETURNED and CLOSED items, most recently settled first. */
+    fun observeSettled(): Flow<List<Item>> =
+        combine(observeByStatus(ItemStatus.RETURNED), observeByStatus(ItemStatus.CLOSED)) { a, b ->
+            (a + b).sortedByDescending { Settled.settledAt(it) }
+        }
+
+    /** Staff. Removes items, their hidden details and their claims for everyone, in one update. */
+    suspend fun deletePermanently(itemIds: List<String>) {
+        if (itemIds.isEmpty()) return
+        val updates = mutableMapOf<String, Any?>()
+        itemIds.forEach { id ->
+            updates["${DbPaths.ITEMS}/$id"] = null
+            updates["${DbPaths.ITEM_SECRETS}/$id"] = null
+            updates["${DbPaths.CLAIMS}/$id"] = null
+        }
+        root.updateChildren(updates).awaitWrite()
     }
 
     /** Clerk or faculty. */

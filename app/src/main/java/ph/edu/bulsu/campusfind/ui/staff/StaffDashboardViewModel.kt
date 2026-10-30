@@ -22,9 +22,14 @@ import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.model.ItemStatus
 import ph.edu.bulsu.campusfind.model.ItemType
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import ph.edu.bulsu.campusfind.domain.Settled as SettledRules
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
+import ph.edu.bulsu.campusfind.ui.common.UiMessage
 
-enum class StaffTab { CLAIMS, TURN_IN }
+enum class StaffTab { CLAIMS, TURN_IN, SETTLED }
 
 /** A pending claim with its item and the finder's hidden detail, shown side by side. */
 data class StaffClaimRow(val claim: Claim, val item: Item?, val hiddenDetail: String?)
@@ -33,6 +38,8 @@ sealed interface StaffState {
     data object Loading : StaffState
     data class Claims(val rows: List<StaffClaimRow>) : StaffState
     data class TurnIn(val items: List<Item>) : StaffState
+    /** [deletable] are the ids settled over 30 days ago. */
+    data class Settled(val items: List<Item>, val deletable: List<String>) : StaffState
     data class Failed(@param:StringRes val message: Int) : StaffState
 }
 
@@ -63,8 +70,12 @@ class StaffDashboardViewModel(private val handle: SavedStateHandle) : ViewModel(
                 // The rules refuse the reads anyway; this gives a clear message instead.
                 !staff -> flowOf(StaffState.Failed(R.string.error_staff_only))
                 tab == StaffTab.CLAIMS -> pendingClaimRows().map { StaffState.Claims(it) }
-                else -> items.observeByStatus(ItemStatus.OPEN)
+                tab == StaffTab.TURN_IN -> items.observeByStatus(ItemStatus.OPEN)
                     .map { list -> StaffState.TurnIn(list.filter { it.type == ItemType.FOUND }) }
+                else -> items.observeSettled().map { list ->
+                    val now = System.currentTimeMillis()
+                    StaffState.Settled(list, list.filter { SettledRules.deletable(it, now) }.map { it.id })
+                }
             }
             source
                 .onStart { emit(StaffState.Loading) }
@@ -91,6 +102,22 @@ class StaffDashboardViewModel(private val handle: SavedStateHandle) : ViewModel(
                     ) { it.toList() }
                 }
             }
+
+    private val _messages = Channel<UiMessage>(Channel.BUFFERED)
+    val messages: Flow<UiMessage> = _messages.receiveAsFlow()
+
+    /** Deletes every item settled over 30 days ago, in one update. */
+    fun deleteOld() {
+        val ids = (state.value as? StaffState.Settled)?.deletable ?: return
+        viewModelScope.launch {
+            try {
+                items.deletePermanently(ids)
+                _messages.send(UiMessage(R.plurals.msg_deleted_count, count = ids.size))
+            } catch (e: Exception) {
+                _messages.send(UiMessage(ErrorMessages.forException(e)))
+            }
+        }
+    }
 
     private companion object {
         const val KEY_TAB = "tab"

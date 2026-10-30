@@ -46,14 +46,20 @@ class ItemDetailFragment : Fragment() {
         binding.closeReportButton.setOnClickListener { viewModel.closeReport() }
         binding.markTurnedInButton.setOnClickListener { viewModel.markTurnedIn() }
         binding.changeStatusButton.setOnClickListener { showChangeStatus() }
+        binding.deleteButton.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(R.string.dialog_delete_body)
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.deletePermanently() }
+                .show()
+        }
+        collectWhenStarted(viewModel.deleted) { findNavController().popBackStack() }
 
         collectWhenStarted(viewModel.state) { state ->
             when (state) {
                 DetailState.Loading -> Unit
-                DetailState.Missing -> {
-                    showMessage(UiMessage(R.string.error_generic))
-                    findNavController().popBackStack()
-                }
+                DetailState.Missing -> findNavController().popBackStack()
                 is DetailState.Shown -> {
                     bindItem(state.item)
                     bindMyClaim(state.myClaim)
@@ -73,6 +79,7 @@ class ItemDetailFragment : Fragment() {
                     binding.closeReportButton.visibleIf(state.canClose)
                     binding.markTurnedInButton.visibleIf(state.canMarkTurnedIn)
                     binding.changeStatusButton.visibleIf(state.canOverride)
+                    binding.deleteButton.visibleIf(state.canDelete)
                 }
             }
         }

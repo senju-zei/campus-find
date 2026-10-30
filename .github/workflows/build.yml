@@ -55,7 +55,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --yes --cleanup-tag || true
+          # GitHub sometimes answers the delete with HTTP 500; retry until the old release is gone.
+          for attempt in 1 2 3; do
+            gh release view latest > /dev/null 2>&1 || break
+            gh release delete latest --yes --cleanup-tag || sleep 10
+          done
           gh release create latest app/build/outputs/apk/debug/campus-find.apk \
             --target "$GITHUB_SHA" \
             --title "Campus Find (latest build)" \

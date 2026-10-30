@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.core.ServiceLocator
+import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.domain.StatusTransitions
 import ph.edu.bulsu.campusfind.model.Claim
 import ph.edu.bulsu.campusfind.model.ClaimStatus
@@ -43,6 +44,8 @@ sealed interface DetailState {
         val canClose: Boolean,
         val canMarkTurnedIn: Boolean,
         val canOverride: Boolean,
+        /** Staff only: settled over 30 days ago, so it can be deleted permanently. */
+        val canDelete: Boolean = false,
         /** Staff only: the approved claim, to check the pickup code at the CS Office. */
         val approvedForStaff: Claim? = null,
     ) : DetailState
@@ -107,6 +110,7 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
                 canMarkTurnedIn = role.isStaff && item.type == ItemType.FOUND && item.status == ItemStatus.OPEN,
                 canOverride = role == Role.FACULTY,
                 approvedForStaff = approved,
+                canDelete = role.isStaff && Settled.deletable(item, System.currentTimeMillis()),
             )
         }
     }
@@ -118,6 +122,15 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
 
     /** Clerk or faculty: the FOUND item is now at the CS Office. */
     fun markTurnedIn() = run(R.string.msg_marked_turned_in) { items.markTurnedIn(itemId) }
+
+    private val _deleted = Channel<Unit>(Channel.CONFLATED)
+    val deleted: Flow<Unit> = _deleted.receiveAsFlow()
+
+    /** Staff. Removes the item, its hidden detail and claims for everyone. */
+    fun deletePermanently() = run(R.string.action_delete) {
+        items.deletePermanently(listOf(itemId))
+        _deleted.send(Unit)
+    }
 
     /** Faculty override to any status. */
     fun overrideStatus(status: ItemStatus) = run(R.string.msg_status_changed) { items.overrideStatus(itemId, status) }

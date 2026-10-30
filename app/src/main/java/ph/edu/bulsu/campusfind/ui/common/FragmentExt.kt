@@ -21,10 +21,10 @@ fun <T> Fragment.collectWhenStarted(flow: Flow<T>, action: suspend (T) -> Unit) 
 }
 
 fun Fragment.showMessage(message: UiMessage) {
-    val text = if (message.arg != null) {
-        getString(message.text, message.arg)
-    } else {
-        getString(message.text)
+    val text = when {
+        message.count != null -> resources.getQuantityString(message.text, message.count, message.count)
+        message.arg != null -> getString(message.text, message.arg)
+        else -> getString(message.text)
     }
     view?.let { Snackbar.make(it, text, Snackbar.LENGTH_LONG).show() }
 }

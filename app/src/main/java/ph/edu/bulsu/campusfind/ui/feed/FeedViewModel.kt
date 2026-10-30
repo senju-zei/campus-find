@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import ph.edu.bulsu.campusfind.core.ServiceLocator
+import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.model.ItemType
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
@@ -47,7 +48,10 @@ class FeedViewModel(private val handle: SavedStateHandle) : ViewModel() {
     val state: StateFlow<FeedState> = selectedType
         .flatMapLatest { type ->
             items.observeByType(type)
-                .map<List<Item>, FeedState> { FeedState.Loaded(type, it) }
+                .map<List<Item>, FeedState> { list ->
+                    val now = System.currentTimeMillis()
+                    FeedState.Loaded(type, list.filterNot { Settled.hiddenFromFeed(it, now) })
+                }
                 .onStart { emit(FeedState.Loading) }
                 .catch { emit(FeedState.Failed(ErrorMessages.forException(it))) }
         }

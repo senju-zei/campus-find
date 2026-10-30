@@ -43,6 +43,7 @@ object ErrorMessages {
 
 /**
  * A one-time message for a Snackbar, with an optional format argument. Serializable so it can
- * pass between screens through a SavedStateHandle.
+ * pass between screens through a SavedStateHandle. [text] is a string resource, or a plurals
+ * resource when [count] is set (so it carries no @StringRes annotation).
  */
-data class UiMessage(@param:StringRes val text: Int, val arg: String? = null) : Serializable
+data class UiMessage(val text: Int, val arg: String? = null, val count: Int? = null) : Serializable

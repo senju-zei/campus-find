@@ -9,12 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentStaffDashboardBinding
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
+import ph.edu.bulsu.campusfind.ui.common.showMessage
 import ph.edu.bulsu.campusfind.ui.common.showResultMessages
 import ph.edu.bulsu.campusfind.ui.common.visibleIf
 
@@ -52,7 +54,9 @@ class StaffDashboardFragment : Fragment() {
         collectWhenStarted(viewModel.state) { state ->
             binding.progress.visibleIf(state is StaffState.Loading)
             binding.error.visibleIf(state is StaffState.Failed)
-            binding.hint.visibleIf(state is StaffState.Claims && state.rows.isNotEmpty())
+            binding.hint.visibleIf(state is StaffState.Claims && state.rows.isNotEmpty() || state is StaffState.Settled)
+            binding.hint.setText(if (state is StaffState.Settled) R.string.hint_settled else R.string.hint_tap_review)
+            binding.deleteOldButton.visibleIf(state is StaffState.Settled && state.deletable.isNotEmpty())
             when (state) {
                 StaffState.Loading -> binding.empty.visibleIf(false)
                 is StaffState.Failed -> {
@@ -66,6 +70,12 @@ class StaffDashboardFragment : Fragment() {
                     binding.empty.visibleIf(state.rows.isEmpty())
                     binding.emptyText.setText(R.string.empty_staff_claims)
                 }
+                is StaffState.Settled -> {
+                    if (binding.list.adapter !== turnInAdapter) binding.list.adapter = turnInAdapter
+                    turnInAdapter.submitList(state.items)
+                    binding.empty.visibleIf(state.items.isEmpty())
+                    binding.emptyText.setText(R.string.empty_staff_settled)
+                }
                 is StaffState.TurnIn -> {
                     if (binding.list.adapter !== turnInAdapter) binding.list.adapter = turnInAdapter
                     turnInAdapter.submitList(state.items)
@@ -74,6 +84,17 @@ class StaffDashboardFragment : Fragment() {
                 }
             }
         }
+        binding.deleteOldButton.setOnClickListener {
+            val count = (viewModel.state.value as? StaffState.Settled)?.deletable?.size ?: 0
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_old_body, count, count))
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.deleteOld() }
+                .show()
+        }
+        collectWhenStarted(viewModel.messages) { showMessage(it) }
+
         // Review claim hands back "Claim approved" or "Claim rejected" here.
         showResultMessages()
     }
@@ -82,6 +103,7 @@ class StaffDashboardFragment : Fragment() {
         val tabs = binding.tabs
         tabs.addTab(tabs.newTab().setText(R.string.tab_staff_claims).setTag(StaffTab.CLAIMS))
         tabs.addTab(tabs.newTab().setText(R.string.tab_staff_turn_in).setTag(StaffTab.TURN_IN))
+        tabs.addTab(tabs.newTab().setText(R.string.tab_staff_settled).setTag(StaffTab.SETTLED))
         tabs.getTabAt(viewModel.selectedTab.value.ordinal)?.select()
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) = viewModel.select(tab.tag as StaffTab)

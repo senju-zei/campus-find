@@ -67,16 +67,12 @@ Read this first in a new session, together with `Campus_Find.md` (the plan, in t
 
 ## Next: one batch per new session
 Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
-- **Batch 2 also: release retry in `.github/workflows/build.yml`.** The publish step once failed
-  because `gh release delete` got HTTP 500 and then `gh release create` said the tag exists. Wrap the
-  delete in a loop (up to 3 tries, 10 s apart, stop when `gh release view latest` fails) before create.
-- **Batch 2: Trash / Settled tab (staff only).** RETURNED and CLOSED items leave Feed 3 days after
-  `updatedAt` (client filter), stay in Profile (Posts/Claims). Staff "Settled" tab lists them; "Delete
-  permanently" only for items settled more than 30 days ago, with a confirmation ("removes it for
-  everyone, cannot be undone"). Rules must let staff delete `itemSecrets/{id}` (today `!data.exists()`
-  blocks it) and claims; publish rules.
-  Note: CLOSED by a poster does not set `updatedAt` (rules block it for posters); use `createdAt` or
-  allow posters to write `updatedAt` when closing.
+- **Batch 2: DONE.** `domain/Settled.kt` (3-day Feed hide, 30-day delete, settled time = updatedAt or
+  createdAt). Closing a LOST item now stamps `updatedAt` (rules allow the poster this). Staff dashboard
+  has a third tab "Settled" with "Delete items settled over 30 days ago"; Item detail shows "Delete
+  permanently" to staff once deletable. Delete = items/{id}, itemSecrets/{id}, claims/{id} set to null in
+  one update (rules allow staff deletes only). Release step in build.yml retries the delete 3 times.
+  Rules published (8212 chars). Students' myClaims pointers to deleted items stay but show nothing.
 - **Batch 3: Search and filter + match suggestions + swipe-down refresh.** Feed search box and
   chips (category, color; text matches title, brand, description). After posting a Lost item, show
   "Might be yours": Found items with same category (and color/location) from the last 14 days.

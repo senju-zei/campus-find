@@ -252,6 +252,15 @@
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/deleteButton"
+            style="@style/Widget.CampusFind.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_delete_permanently"
+            android:textColor="@color/chip_error_text"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/changeStatusButton"
             style="@style/Widget.CampusFind.Button.Text"
             android:layout_width="match_parent"

@@ -225,6 +225,24 @@
     <!-- Staff -->
     <string name="staff_own_claim">You claimed this item. Another staff member must review it.</string>
 
+    <!-- Settled (trash) -->
+    <string name="tab_staff_settled">Settled</string>
+    <string name="empty_staff_settled">No settled items.</string>
+    <string name="hint_settled">Returned and closed items leave Feed after 3 days. You can delete them 30 days after they settle.</string>
+    <string name="action_delete_permanently">Delete permanently</string>
+    <string name="action_delete_old">Delete items settled over 30 days ago</string>
+    <string name="action_delete">Delete</string>
+    <string name="dialog_delete_title">Delete permanently?</string>
+    <string name="dialog_delete_body">This removes the item, its hidden detail and its claims for everyone. It cannot be undone.</string>
+    <plurals name="dialog_delete_old_body">
+        <item quantity="one">This removes %d item for everyone, with its hidden detail and claims. It cannot be undone.</item>
+        <item quantity="other">This removes %d items for everyone, with their hidden details and claims. It cannot be undone.</item>
+    </plurals>
+    <plurals name="msg_deleted_count">
+        <item quantity="one">%d item deleted.</item>
+        <item quantity="other">%d items deleted.</item>
+    </plurals>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="item_colors">
         <item>Black</item>

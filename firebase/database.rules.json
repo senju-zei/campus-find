@@ -29,7 +29,7 @@
         "postedBy": { ".validate": "true" },
         "postedByName": { ".validate": "true" },
         "createdAt": { ".validate": "newData.isNumber()" },
-        "updatedAt": { ".validate": "newData.isNumber()" },
+        "updatedAt": { ".validate": "newData.isNumber()", ".write": "auth != null && data.parent().child('postedBy').val() === auth.uid && data.parent().child('type').val() === 'LOST' && newData.parent().child('status').val() === 'CLOSED'" },
         "turnedInAt": { ".validate": "newData.isNumber()" },
         "status": {
           ".validate": "newData.isString() && (newData.val() === 'OPEN' || newData.val() === 'TURNED_IN' || newData.val() === 'CLAIM_PENDING' || newData.val() === 'RETURNED' || newData.val() === 'CLOSED')",
@@ -41,7 +41,7 @@
     "itemSecrets": {
       "$itemId": {
         ".read": "auth != null && (root.child('items/' + $itemId + '/postedBy').val() === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
-        ".write": "auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && !data.exists() && newData.parent().parent().child('items/' + $itemId + '/postedBy').val() === auth.uid",
+        ".write": "auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && !data.exists() && newData.parent().parent().child('items/' + $itemId + '/postedBy').val() === auth.uid || (auth != null && !newData.exists() && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty'))",
         ".validate": "newData.hasChild('hiddenDetail') && newData.child('hiddenDetail').val().length >= 1 && newData.child('hiddenDetail').val().length <= 300",
         "hiddenDetail": { ".validate": "newData.isString()" },
         "$other": { ".validate": false }
@@ -50,6 +50,7 @@
     "claims": {
       ".read": "auth != null && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
       "$itemId": {
+        ".write": "auth != null && !newData.exists() && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
         "$claimUid": {
           ".read": "auth != null && $claimUid === auth.uid",
           ".write": "(auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && $claimUid === auth.uid && root.child('users/' + auth.uid + '/role').val() === 'student' && newData.child('claimant').val() === auth.uid && newData.child('status').val() === 'PENDING' && !newData.child('reviewedBy').exists() && !newData.child('rejectReason').exists() && !newData.child('pickupCode').exists() && (!data.exists() || data.child('status').val() === 'REJECTED') && root.child('items/' + $itemId + '/type').val() === 'FOUND' && root.child('items/' + $itemId + '/postedBy').val() !== auth.uid && (root.child('items/' + $itemId + '/status').val() === 'OPEN' || root.child('items/' + $itemId + '/status').val() === 'TURNED_IN' || root.child('items/' + $itemId + '/status').val() === 'CLAIM_PENDING') && newData.parent().parent().parent().child('items/' + $itemId + '/status').val() === 'CLAIM_PENDING') || (auth != null && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty') && $claimUid !== auth.uid)",
