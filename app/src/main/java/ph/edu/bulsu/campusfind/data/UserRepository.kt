@@ -25,6 +25,11 @@ class UserRepository(private val root: DatabaseReference) {
     suspend fun getProfile(uid: String): UserProfile? =
         UserProfile.from(userRef(uid).readOnce())
 
+    /** Sets or, with null, removes the profile picture (Base64 JPEG from ProfilePhoto). */
+    suspend fun setPhoto(uid: String, photo: String?) {
+        userRef(uid).child("photo").setValue(photo).awaitWrite()
+    }
+
     fun observeProfile(uid: String): Flow<UserProfile?> =
         userRef(uid).valueEvents().map { UserProfile.from(it) }
 }

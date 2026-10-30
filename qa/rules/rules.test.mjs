@@ -120,6 +120,26 @@ describe('Users (R1-R3, R23)', () => {
   });
 });
 
+describe('Profile picture', () => {
+  const photo = 'A'.repeat(20000);
+
+  test('student and clerk set and remove their own picture: allow', async () => {
+    await assertSucceeds(set(ref(db(ben), 'users/ben/photo'), photo));
+    await assertSucceeds(remove(ref(db(ben), 'users/ben/photo')));
+    await assertSucceeds(set(ref(db(clerk), 'users/clerk/photo'), photo));
+  });
+
+  test('picture over 60000 characters or not text: deny', async () => {
+    await assertFails(set(ref(db(ben), 'users/ben/photo'), 'A'.repeat(60001)));
+    await assertFails(set(ref(db(ben), 'users/ben/photo'), 12345));
+  });
+
+  test('someone else sets my picture: deny (even staff)', async () => {
+    await assertFails(set(ref(db(cara), 'users/ben/photo'), photo));
+    await assertFails(set(ref(db(clerk), 'users/ben/photo'), photo));
+  });
+});
+
 describe('Items (R4-R8, R17, R21, R22, R25-R27)', () => {
   test('R4 verified student creates own OPEN item with its secret in one update: allow', async () => {
     await assertSucceeds(update(ref(db(ben)), {

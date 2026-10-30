@@ -5,7 +5,8 @@
         ".read": "auth != null && (auth.uid === $uid || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
         ".write": "auth != null && auth.uid === $uid && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/)",
         "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())" },
-        "role": { ".validate": "(!data.exists() && newData.val() === 'student') || data.val() === newData.val()" }
+        "role": { ".validate": "(!data.exists() && newData.val() === 'student') || data.val() === newData.val()" },
+        "photo": { ".validate": "newData.isString() && newData.val().length >= 100 && newData.val().length <= 60000" }
       }
     },
     "items": {

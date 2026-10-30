@@ -31,6 +31,8 @@ data class UserProfile(
     val email: String,
     val role: Role,
     val createdAt: Long,
+    /** Profile picture, a Base64 JPEG (see ProfilePhoto), or null. */
+    val photo: String? = null,
 ) {
     companion object {
         fun from(snapshot: DataSnapshot): UserProfile? {
@@ -42,6 +44,7 @@ data class UserProfile(
                 email = snapshot.child("email").getValue(String::class.java).orEmpty(),
                 role = Role.from(snapshot.child("role").getValue(String::class.java)),
                 createdAt = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L,
+                photo = snapshot.child("photo").getValue(String::class.java),
             )
         }
     }

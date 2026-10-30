@@ -88,6 +88,31 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
 
     fun logOut() = ServiceLocator.authRepository.logOut()
 
+    /** True while a profile picture is being saved. */
+    private val _photoBusy = MutableStateFlow(false)
+    val photoBusy: StateFlow<Boolean> = _photoBusy
+
+    /** Saves the encoded picture (see ProfilePhoto), or removes it when [photo] is null. */
+    fun setPhoto(photo: String?) {
+        val me = uid ?: return
+        if (_photoBusy.value) return
+        _photoBusy.value = true
+        viewModelScope.launch {
+            try {
+                ServiceLocator.userRepository.setPhoto(me, photo)
+                _messages.send(UiMessage(if (photo == null) R.string.msg_photo_removed else R.string.msg_photo_saved))
+            } catch (e: Exception) {
+                _messages.send(UiMessage(ErrorMessages.forException(e)))
+            } finally {
+                _photoBusy.value = false
+            }
+        }
+    }
+
+    fun photoFailed() {
+        viewModelScope.launch { _messages.send(UiMessage(R.string.error_photo_read)) }
+    }
+
     val isStaff: StateFlow<Boolean> = profile.map { it?.role?.isStaff == true }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 

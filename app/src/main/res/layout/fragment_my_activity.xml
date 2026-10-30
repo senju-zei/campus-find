@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- My activity: Posts and Claims tabs. No filled button on this screen. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -13,15 +14,54 @@
         android:orientation="horizontal"
         android:padding="@dimen/screen_margin">
 
-        <TextView
-            android:id="@+id/initials"
-            android:layout_width="@dimen/badge_size_row"
-            android:layout_height="@dimen/badge_size_row"
-            android:background="@drawable/bg_initials"
-            android:gravity="center"
-            android:importantForAccessibility="no"
-            android:textAppearance="@style/TextAppearance.CampusFind.Large.Medium"
-            android:textColor="@color/accent" />
+        <!-- Profile picture, or initials when there is none. Tap to change it. -->
+        <FrameLayout
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/cd_change_photo"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/initials"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_initials"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:textAppearance="@style/TextAppearance.CampusFind.Title"
+                android:textColor="@color/accent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.CampusFind.Circle" />
+
+            <ImageView
+                android:layout_width="@dimen/avatar_badge_size"
+                android:layout_height="@dimen/avatar_badge_size"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/bg_avatar_badge"
+                android:importantForAccessibility="no"
+                android:padding="@dimen/space_1"
+                android:src="@drawable/ic_photo_camera" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/photoProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/accent"
+                app:indicatorSize="@dimen/icon_size" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"

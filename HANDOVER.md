@@ -101,6 +101,11 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   view only: removes `users/{uid}/myClaims/{itemId}`, the claim record stays for staff (no rules
   change). Staff Profile "Settled" heading centered with equal padding. Feed top bar shows the logo
   after "Campus Find" (`brandTitle` in `activity_main.xml`).
+- **Profile picture + log out confirm: DONE (owner request).** Tap the avatar on Profile (students,
+  clerks, faculty) → system photo picker → center-cropped 256 px JPEG stored as Base64 in
+  `users/{uid}/photo` (`ui/common/ProfilePhoto.kt`, ~5-30 KB; no Firebase Storage, which needs Blaze).
+  "Remove photo" when one is set. Rules: `photo` string 100-60000 chars, own profile only — **publish
+  the rules in the console** (8332 chars). Log out asks "Log out?" first.
 - **Next: step 7 tiers 3-7** (Espresso in `app/src/androidTest/`, `qa.yml` on an emulator job).
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 

@@ -33,6 +33,10 @@ object Constants {
     const val BRAND_MAX = 60
     const val HELD_AT_MAX = 100
 
+    /** Profile picture: square JPEG side in pixels, and the Base64 length limit (same as the rules). */
+    const val PHOTO_SIZE_PX = 256
+    const val PHOTO_MAX_CHARS = 60_000
+
     /** Settled items (RETURNED, CLOSED) leave Feed after this long. */
     const val SETTLED_HIDE_MS = 3L * 24 * 60 * 60 * 1000
     const val CLAIM_DETAILS_MIN = 10

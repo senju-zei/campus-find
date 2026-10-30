@@ -20,6 +20,8 @@
     <dimen name="badge_size_detail">96dp</dimen>
     <dimen name="logo_size">128dp</dimen>
     <dimen name="logo_size_small">72dp</dimen>
+    <dimen name="avatar_size">64dp</dimen>
+    <dimen name="avatar_badge_size">24dp</dimen>
     <!-- Top bar logo after "Campus Find": a little taller than the 20sp title so the lens reads. -->
     <dimen name="brand_logo_size">30dp</dimen>
     <dimen name="cover_preview_height">64dp</dimen>

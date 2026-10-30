@@ -1,6 +1,13 @@
 package ph.edu.bulsu.campusfind.ui.activity
 
 import android.os.Bundle
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ph.edu.bulsu.campusfind.ui.common.ProfilePhoto
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,9 +56,21 @@ class MyActivityFragment : Fragment() {
         setUpTabs()
         val nav = findNavController()
         binding.logOutButton.setOnClickListener {
-            viewModel.logOut()
-            // Clears the back stack, so Back cannot return to signed-in screens.
-            nav.navigate(R.id.action_global_welcome)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_log_out_title)
+                .setMessage(R.string.dialog_log_out_body)
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_log_out) { _, _ ->
+                    viewModel.logOut()
+                    // Clears the back stack, so Back cannot return to signed-in screens.
+                    nav.navigate(R.id.action_global_welcome)
+                }
+                .show()
+        }
+        binding.avatar.setOnClickListener { changePhoto() }
+        collectWhenStarted(viewModel.photoBusy) { busy ->
+            binding.photoProgress.visibleIf(busy)
+            binding.avatar.isEnabled = !busy
         }
         collectWhenStarted(viewModel.profile) { profile ->
             if (profile == null) return@collectWhenStarted
@@ -59,6 +78,9 @@ class MyActivityFragment : Fragment() {
             binding.email.text = profile.email
             binding.initials.text = profile.name.split(" ").filter { it.isNotBlank() }.take(2)
                 .joinToString("") { it.first().uppercase() }
+            val photo = profile.photo?.let { ProfilePhoto.decode(it) }
+            binding.photo.setImageBitmap(photo)
+            binding.photo.visibleIf(photo != null)
             binding.role.setText(
                 when (profile.role) {
                     Role.STUDENT -> R.string.role_student
@@ -164,6 +186,39 @@ class MyActivityFragment : Fragment() {
     }
 
     private var selectionBar: SelectionBar? = null
+
+    /** System photo picker; no storage permission needed. */
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri == null) return@registerForActivityResult
+        val context = requireContext().applicationContext
+        viewLifecycleOwner.lifecycleScope.launch {
+            val encoded = withContext(Dispatchers.Default) {
+                try {
+                    ProfilePhoto.encode(context, uri)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            if (encoded == null) viewModel.photoFailed() else viewModel.setPhoto(encoded)
+        }
+    }
+
+    /** With a picture: choose another or remove it. Without: open the picker straight away. */
+    private fun changePhoto() {
+        val launchPicker = {
+            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        if (viewModel.profile.value?.photo == null) {
+            launchPicker()
+            return
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.dialog_photo_title)
+            .setItems(arrayOf(getString(R.string.action_choose_photo), getString(R.string.action_remove_photo))) { _, which ->
+                if (which == 0) launchPicker() else viewModel.setPhoto(null)
+            }
+            .show()
+    }
     private var claimsSelectionBar: SelectionBar? = null
 
     /** Staff Profile: History of reviewed claims with long-press delete, instead of the tabs. */

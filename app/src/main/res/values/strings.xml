@@ -305,6 +305,17 @@
     <string name="how_step_number_2">2</string>
     <string name="how_step_number_3">3</string>
 
+    <!-- Profile picture and log out -->
+    <string name="cd_change_photo">Profile picture. Tap to change it.</string>
+    <string name="dialog_photo_title">Profile picture</string>
+    <string name="action_choose_photo">Choose a photo</string>
+    <string name="action_remove_photo">Remove photo</string>
+    <string name="msg_photo_saved">Profile picture saved.</string>
+    <string name="msg_photo_removed">Profile picture removed.</string>
+    <string name="error_photo_read">This picture could not be used. Try another one.</string>
+    <string name="dialog_log_out_title">Log out?</string>
+    <string name="dialog_log_out_body">You will need your email and password to log in again.</string>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="item_colors">
         <item>Black</item>
