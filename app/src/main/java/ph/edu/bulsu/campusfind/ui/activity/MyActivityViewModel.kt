@@ -25,6 +25,8 @@ import kotlinx.coroutines.launch
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
+import ph.edu.bulsu.campusfind.model.ItemStatus
+import ph.edu.bulsu.campusfind.model.ItemType
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.model.UserProfile
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
@@ -70,6 +72,20 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
         .catch { emit(0 to 0) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0 to 0)
 
+    /**
+     * Students: my FOUND items still OPEN and not left somewhere else, so not yet at the CS Office.
+     * Feeds the reminder on Profile.
+     */
+    val turnInReminder: StateFlow<Int> = (
+        uid?.let { id ->
+            items.observePostedBy(id).map { posts ->
+                posts.count { it.type == ItemType.FOUND && it.status == ItemStatus.OPEN && it.heldAt.isNullOrBlank() }
+            }
+        } ?: flowOf(0)
+        )
+        .catch { emit(0) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0)
+
     fun logOut() = ServiceLocator.authRepository.logOut()
 
     val isStaff: StateFlow<Boolean> = profile.map { it?.role?.isStaff == true }
@@ -106,6 +122,19 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
             try {
                 claims.deleteClaims(pairs)
                 _messages.send(UiMessage(R.plurals.msg_deleted_count, count = pairs.size))
+            } catch (e: Exception) {
+                _messages.send(UiMessage(ErrorMessages.forException(e)))
+            }
+        }
+    }
+
+    /** Student. Removes the chosen finished claims from their own Profile; staff keep the records. */
+    fun hideClaims(itemIds: List<String>) {
+        val me = uid ?: return
+        viewModelScope.launch {
+            try {
+                claims.hideFromMyClaims(me, itemIds)
+                _messages.send(UiMessage(R.plurals.msg_claims_removed, count = itemIds.size))
             } catch (e: Exception) {
                 _messages.send(UiMessage(ErrorMessages.forException(e)))
             }

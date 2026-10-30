@@ -35,8 +35,6 @@ object Constants {
 
     /** Settled items (RETURNED, CLOSED) leave Feed after this long. */
     const val SETTLED_HIDE_MS = 3L * 24 * 60 * 60 * 1000
-    /** Staff may delete a settled item permanently after this long. */
-    const val SETTLED_DELETE_MS = 30L * 24 * 60 * 60 * 1000
     const val CLAIM_DETAILS_MIN = 10
     const val CLAIM_DETAILS_MAX = 500
     const val CLAIM_OPTIONAL_MAX = 200

@@ -11,8 +11,15 @@ import android.content.res.ColorStateList
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.chip.Chip
+import kotlinx.coroutines.flow.combine
+import ph.edu.bulsu.campusfind.ui.common.TabCounts
 import ph.edu.bulsu.campusfind.core.Constants
+import androidx.core.view.MenuItemCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -88,6 +95,13 @@ class FeedFragment : Fragment() {
         }
 
         collectWhenStarted(viewModel.isStaff) { requireActivity().invalidateMenu() }
+        collectWhenStarted(viewModel.tabCounts) { (found, lost) ->
+            TabCounts.set(binding.tabs.getTabAt(0), R.string.tab_found, found)
+            TabCounts.set(binding.tabs.getTabAt(1), R.string.tab_lost, lost)
+        }
+        collectWhenStarted(combine(viewModel.isStaff, viewModel.pendingClaims) { staff, count -> if (staff) count else 0 }) {
+            showPendingBadge(it)
+        }
 
         // Post item hands back its confirmation here.
         showResultMessages()
@@ -140,6 +154,8 @@ class FeedFragment : Fragment() {
 
                 override fun onPrepareMenu(menu: Menu) {
                     menu.findItem(R.id.action_staff_dashboard)?.isVisible = viewModel.isStaff.value
+                    // The menu views were rebuilt, so the badge is attached again.
+                    showPendingBadge(if (viewModel.isStaff.value) viewModel.pendingClaims.value else 0)
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
@@ -163,6 +179,37 @@ class FeedFragment : Fragment() {
         )
     }
 
+    private val toolbar: MaterialToolbar get() = requireActivity().findViewById(R.id.toolbar)
+    private var pendingBadge: BadgeDrawable? = null
+
+    /**
+     * Number badge on the Staff dashboard icon. Posted so it attaches after the menu is rebuilt
+     * (invalidateMenu recreates the icon views).
+     */
+    @androidx.annotation.OptIn(markerClass = [ExperimentalBadgeUtils::class])
+    private fun showPendingBadge(count: Int) {
+        val bar = toolbar
+        bar.post {
+            if (_binding == null) return@post
+            pendingBadge?.let { BadgeUtils.detachBadgeDrawable(it, bar, R.id.action_staff_dashboard) }
+            pendingBadge = null
+            // Null until the menu is first built; onPrepareMenu calls this again then.
+            val item = bar.menu.findItem(R.id.action_staff_dashboard) ?: return@post
+            MenuItemCompat.setContentDescription(
+                item,
+                if (count > 0) resources.getQuantityString(R.plurals.cd_staff_dashboard_pending, count, count) else getString(R.string.cd_staff_dashboard),
+            )
+            if (count <= 0 || !item.isVisible) return@post
+            val context = requireContext()
+            pendingBadge = BadgeDrawable.create(context).apply {
+                number = count
+                maxCharacterCount = 3
+                backgroundColor = ContextCompat.getColor(context, R.color.accent)
+                badgeTextColor = ContextCompat.getColor(context, R.color.on_accent)
+            }.also { BadgeUtils.attachBadgeDrawable(it, bar, R.id.action_staff_dashboard) }
+        }
+    }
+
     /** Opens Post item with the type of the tab the user is on. */
     private fun openPostItem() {
         findNavController().navigate(
@@ -171,7 +218,10 @@ class FeedFragment : Fragment() {
         )
     }
 
+    @androidx.annotation.OptIn(markerClass = [ExperimentalBadgeUtils::class])
     override fun onDestroyView() {
+        pendingBadge?.let { BadgeUtils.detachBadgeDrawable(it, toolbar, R.id.action_staff_dashboard) }
+        pendingBadge = null
         super.onDestroyView()
         _binding = null
     }

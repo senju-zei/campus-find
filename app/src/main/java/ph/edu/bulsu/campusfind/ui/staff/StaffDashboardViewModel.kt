@@ -78,6 +78,22 @@ class StaffDashboardViewModel(private val handle: SavedStateHandle) : ViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), StaffState.Loading)
 
+    /** Tab counts: pending claims, found items to turn in, settled items. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tabCounts: StateFlow<Triple<Int, Int, Int>> = isStaff.flatMapLatest { staff ->
+        if (!staff) {
+            flowOf(Triple(0, 0, 0))
+        } else {
+            combine(
+                claims.observeAllClaims().map { all -> all.count { it.status == ClaimStatus.PENDING } },
+                items.observeByStatus(ItemStatus.OPEN).map { list -> list.count { it.type == ItemType.FOUND } },
+                items.observeSettled().map { it.size },
+            ) { pending, turnIn, settled -> Triple(pending, turnIn, settled) }
+        }
+    }
+        .catch { emit(Triple(0, 0, 0)) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), Triple(0, 0, 0))
+
     /** Pending claims, oldest first, each joined with its live item and hidden detail. */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun pendingClaimRows(): Flow<List<StaffClaimRow>> =

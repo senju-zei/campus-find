@@ -81,6 +81,16 @@ class ClaimRepository(private val root: DatabaseReference) {
         root.updateChildren(updates).awaitWrite()
     }
 
+    /**
+     * Student. Removes finished claims from their own Profile only: users/{uid}/myClaims/{itemId}
+     * is removed, the claim record stays for staff.
+     */
+    suspend fun hideFromMyClaims(uid: String, itemIds: List<String>) {
+        if (itemIds.isEmpty()) return
+        val updates = itemIds.associate { "${DbPaths.USERS}/$uid/${DbPaths.MY_CLAIMS}/$it" to null }
+        root.updateChildren(updates).awaitWrite()
+    }
+
     /** Staff. All claims on one item, oldest first. */
     fun observeClaimsForItem(itemId: String): Flow<List<Claim>> =
         claims.child(itemId).valueEvents().map { snapshot ->

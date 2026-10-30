@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.update
 import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.domain.ItemSearch
 import ph.edu.bulsu.campusfind.domain.Settled
+import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.model.ItemType
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
@@ -64,6 +66,29 @@ class FeedViewModel(private val handle: SavedStateHandle) : ViewModel() {
     }
 
     fun refresh() = refresh.update { it + 1 }
+
+    /** Found and Lost tab counts: items Feed shows, before search and category filters. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tabCounts: StateFlow<Pair<Int, Int>> = refresh.flatMapLatest {
+        combine(items.observeByType(ItemType.FOUND), items.observeByType(ItemType.LOST)) { found, lost ->
+            val now = System.currentTimeMillis()
+            found.count { !Settled.hiddenFromFeed(it, now) } to lost.count { !Settled.hiddenFromFeed(it, now) }
+        }
+    }
+        .catch { emit(0 to 0) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0 to 0)
+
+    /** Staff only: pending claims, shown as a badge on the Staff dashboard icon. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pendingClaims: StateFlow<Int> = isStaff.flatMapLatest { staff ->
+        if (!staff) {
+            flowOf(0)
+        } else {
+            ServiceLocator.claimRepository.observeAllClaims().map { all -> all.count { it.status == ClaimStatus.PENDING } }
+        }
+    }
+        .catch { emit(0) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0)
 
     /** Live list for the selected tab; updates without a refresh when anyone posts. */
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -20,9 +20,12 @@
     <dimen name="badge_size_detail">96dp</dimen>
     <dimen name="logo_size">128dp</dimen>
     <dimen name="logo_size_small">72dp</dimen>
+    <!-- Top bar logo after "Campus Find": a little taller than the 20sp title so the lens reads. -->
+    <dimen name="brand_logo_size">30dp</dimen>
     <dimen name="cover_preview_height">64dp</dimen>
     <dimen name="welcome_text_max_width">320dp</dimen>
     <dimen name="welcome_slide">16dp</dimen>
+    <dimen name="how_step_size">32dp</dimen>
 
     <!-- The only four text sizes allowed. -->
     <dimen name="text_small">12sp</dimen>

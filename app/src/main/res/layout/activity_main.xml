@@ -12,7 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        app:navigationContentDescription="@string/action_navigate_up" />
+        app:navigationContentDescription="@string/action_navigate_up">
+
+        <!-- Feed only: "Campus Find" with the logo after "Find", in place of the plain title. -->
+        <LinearLayout
+            android:id="@+id/brandTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_feed"
+                android:textAppearance="@style/TextAppearance.CampusFind.Title" />
+
+            <ImageView
+                android:layout_width="@dimen/brand_logo_size"
+                android:layout_height="@dimen/brand_logo_size"
+                android:layout_marginStart="@dimen/space_1"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_logo" />
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <View
         android:id="@+id/toolbarDivider"

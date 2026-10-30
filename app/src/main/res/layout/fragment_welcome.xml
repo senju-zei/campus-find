@@ -54,6 +54,116 @@
             android:text="@string/welcome_body"
             android:textAppearance="@style/TextAppearance.CampusFind.Body.Muted" />
 
+        <!-- How it works: three short steps under the welcome text. -->
+        <LinearLayout
+            android:id="@+id/howItWorks"
+            style="@style/Widget.CampusFind.Row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_6"
+            android:foreground="@null"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/how_title"
+                android:textAppearance="@style/TextAppearance.CampusFind.Small.Medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_3"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/space_1"
+                android:paddingEnd="@dimen/space_1">
+
+                <TextView
+                    android:layout_width="@dimen/how_step_size"
+                    android:layout_height="@dimen/how_step_size"
+                    android:background="@drawable/bg_initials"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@string/how_step_number_1"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium"
+                    android:textColor="@color/accent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_2"
+                    android:gravity="center"
+                    android:text="@string/how_step_1"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/space_1"
+                android:paddingEnd="@dimen/space_1">
+
+                <TextView
+                    android:layout_width="@dimen/how_step_size"
+                    android:layout_height="@dimen/how_step_size"
+                    android:background="@drawable/bg_initials"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@string/how_step_number_2"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium"
+                    android:textColor="@color/accent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_2"
+                    android:gravity="center"
+                    android:text="@string/how_step_2"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/space_1"
+                android:paddingEnd="@dimen/space_1">
+
+                <TextView
+                    android:layout_width="@dimen/how_step_size"
+                    android:layout_height="@dimen/how_step_size"
+                    android:background="@drawable/bg_initials"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@string/how_step_number_3"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium"
+                    android:textColor="@color/accent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_2"
+                    android:gravity="center"
+                    android:text="@string/how_step_3"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+            </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/pilot"
             style="@style/Widget.CampusFind.StatusChip"

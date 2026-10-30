@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ph.edu.bulsu.campusfind.R
+import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.databinding.FragmentItemDetailBinding
 import ph.edu.bulsu.campusfind.model.Claim
 import ph.edu.bulsu.campusfind.model.ClaimStatus
@@ -49,9 +50,17 @@ class ItemDetailFragment : Fragment() {
         binding.markTurnedInButton.setOnClickListener { viewModel.markTurnedIn() }
         binding.changeStatusButton.setOnClickListener { showChangeStatus() }
         binding.deleteButton.setOnClickListener {
+            val item = (viewModel.state.value as? DetailState.Shown)?.item
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dialog_delete_title)
-                .setMessage(R.string.dialog_delete_body)
+                .setMessage(
+                    buildString {
+                        append(getString(R.string.dialog_delete_body))
+                        if (item != null && Settled.deleteNeedsWarning(item)) {
+                            append("\n\n").append(getString(R.string.dialog_delete_returned_warning))
+                        }
+                    },
+                )
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.deletePermanently() }
                 .show()

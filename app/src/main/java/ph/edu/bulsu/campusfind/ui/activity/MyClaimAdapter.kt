@@ -10,12 +10,16 @@ import ph.edu.bulsu.campusfind.databinding.ClaimRowBinding
 import ph.edu.bulsu.campusfind.domain.StatusTransitions
 import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.ui.common.ItemUi
+import ph.edu.bulsu.campusfind.ui.common.Selection
 import ph.edu.bulsu.campusfind.ui.common.visibleIf
 
 /** My claims: status chip, then the next step (wait, pick up, or the reason plus "Claim again"). */
 class MyClaimAdapter(
+    private val selection: Selection,
     private val onOpen: (MyClaimRow) -> Unit,
     private val onClaimAgain: (MyClaimRow) -> Unit,
+    /** Long-press selection, to remove finished claims from the Profile. */
+    private val onSelect: (MyClaimRow) -> Unit,
 ) : ListAdapter<MyClaimRow, MyClaimAdapter.Holder>(Diff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
@@ -53,7 +57,13 @@ class MyClaimAdapter(
                 StatusTransitions.canClaim(item.status, item.type, isPoster = false)
             binding.claimAgainButton.visibleIf(canClaimAgain)
             binding.claimAgainButton.setOnClickListener { onClaimAgain(row) }
-            binding.root.setOnClickListener { onOpen(row) }
+            val selected = claim.itemId in selection
+            binding.root.setBackgroundResource(if (selected) R.drawable.bg_row_selected else R.drawable.bg_row)
+            binding.root.setOnClickListener { if (selection.isActive) onSelect(row) else onOpen(row) }
+            binding.root.setOnLongClickListener {
+                onSelect(row)
+                true
+            }
         }
     }
 

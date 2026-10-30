@@ -228,7 +228,8 @@
     <!-- Settled (trash) -->
     <string name="tab_staff_settled">Settled</string>
     <string name="empty_staff_settled">No settled items.</string>
-    <string name="hint_settled">Settled items leave Feed after 3 days. Long-press to select items to delete: closed reports any time, returned items 30 days after they settle.</string>
+    <string name="hint_settled">Settled items leave Feed after 3 days. Long-press to select items to delete.</string>
+    <string name="dialog_delete_returned_warning">A returned item is selected. The student will lose their pickup code. Only delete after they have picked up the item.</string>
     <string name="hint_history">Settled</string>
     <string name="dialog_delete_approved_warning">The student will lose their pickup code. Only delete after they have picked up the item.</string>
     <string name="hint_search">Search title, brand, color or place</string>
@@ -238,7 +239,7 @@
     <string name="hint_might_be_yours">Found items like yours from the last 14 days. Open one to claim it.</string>
     <string name="cd_search">Search</string>
     <string name="empty_history">You have not reviewed any claims yet.</string>
-    <string name="msg_cannot_delete_yet">This can be deleted once the item has settled (returned items after 30 days).</string>
+    <string name="msg_cannot_delete_yet">Only finished records can be deleted.</string>
     <string name="cd_delete_selected">Delete selected</string>
     <string name="label_history_code">Approved for %1$s · pickup code %2$s</string>
     <string name="label_history_approved">Approved for %1$s</string>
@@ -271,6 +272,38 @@
         <item quantity="one">%d item deleted.</item>
         <item quantity="other">%d items deleted.</item>
     </plurals>
+
+    <!-- Student: remove finished claims from their own Profile -->
+    <string name="action_remove">Remove</string>
+    <string name="dialog_remove_claims_title">Remove from your Profile?</string>
+    <plurals name="dialog_remove_claims_body">
+        <item quantity="one">Remove %d claim from your Profile? Only you stop seeing it. The CS Office keeps its record.</item>
+        <item quantity="other">Remove %d claims from your Profile? Only you stop seeing them. The CS Office keeps its records.</item>
+    </plurals>
+    <string name="dialog_remove_approved_warning">An approved claim is selected. Its pickup code will no longer show in your Profile. Only remove it after you have picked up the item.</string>
+    <string name="msg_cannot_remove_pending">A pending claim cannot be removed. Wait for the CS Office to review it.</string>
+    <plurals name="msg_claims_removed">
+        <item quantity="one">%d claim removed.</item>
+        <item quantity="other">%d claims removed.</item>
+    </plurals>
+
+    <!-- Batch 4 polish -->
+    <string name="tab_with_count">%1$s (%2$d)</string>
+    <plurals name="reminder_turn_in">
+        <item quantity="one">You have %d found item not yet at the CS Office. Please bring it there so the owner can claim it.</item>
+        <item quantity="other">You have %d found items not yet at the CS Office. Please bring them there so the owners can claim them.</item>
+    </plurals>
+    <plurals name="cd_staff_dashboard_pending">
+        <item quantity="one">Staff dashboard, %d claim to review</item>
+        <item quantity="other">Staff dashboard, %d claims to review</item>
+    </plurals>
+    <string name="how_title">How it works</string>
+    <string name="how_step_1">Post what you lost or found</string>
+    <string name="how_step_2">Found items go to the CS Office</string>
+    <string name="how_step_3">The owner claims it there</string>
+    <string name="how_step_number_1">1</string>
+    <string name="how_step_number_2">2</string>
+    <string name="how_step_number_3">3</string>
 
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="item_colors">

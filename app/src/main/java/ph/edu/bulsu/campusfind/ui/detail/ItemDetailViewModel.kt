@@ -45,7 +45,7 @@ sealed interface DetailState {
         val canClose: Boolean,
         val canMarkTurnedIn: Boolean,
         val canOverride: Boolean,
-        /** Staff only: settled over 30 days ago, so it can be deleted permanently. */
+        /** Staff only: the item has settled, so it can be deleted permanently. */
         val canDelete: Boolean = false,
         /** Staff only: the approved claim, to check the pickup code at the CS Office. */
         val approvedForStaff: Claim? = null,

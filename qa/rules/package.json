@@ -1,0 +1,12 @@
+{
+  "name": "campus-find-rules-tests",
+  "private": true,
+  "description": "Tier 2: Realtime Database rules tests (R1-R27 and the owner's later rules), run in the Firebase emulator.",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 rules.test.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "firebase": "11.10.0"
+  }
+}

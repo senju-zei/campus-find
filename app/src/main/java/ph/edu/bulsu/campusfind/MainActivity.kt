@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
             val showBar = destination.id != R.id.welcomeFragment && destination.id != R.id.startFragment
             binding.toolbar.visibility = if (showBar) View.VISIBLE else View.GONE
             binding.toolbarDivider.visibility = if (showBar) View.VISIBLE else View.GONE
+            // Feed shows the brand (title plus logo) instead of the plain title.
+            val isFeed = destination.id == R.id.feedFragment
+            binding.brandTitle.visibility = if (isFeed) View.VISIBLE else View.GONE
+            supportActionBar?.setDisplayShowTitleEnabled(!isFeed)
         }
     }
 

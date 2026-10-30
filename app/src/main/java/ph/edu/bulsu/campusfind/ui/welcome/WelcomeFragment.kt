@@ -13,7 +13,7 @@ import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentWelcomeBinding
 
 /**
- * Landing page for signed-out users: logo, short welcome, Log in and Create account.
+ * Landing page for signed-out users: logo, short welcome, how it works, Log in and Create account.
  * The logo fades in, the text and buttons slide up, then the eye glances and blinks.
  * All motion is skipped when the system has animations turned off.
  */
@@ -55,7 +55,7 @@ class WelcomeFragment : Fragment() {
                 .start()
         }
 
-        val staggered = listOf(binding.title, binding.tagline, binding.body, binding.pilot, binding.actions)
+        val staggered = listOf(binding.title, binding.tagline, binding.body, binding.howItWorks, binding.pilot, binding.actions)
         staggered.forEachIndexed { index, target ->
             target.alpha = 0f
             target.translationY = slide

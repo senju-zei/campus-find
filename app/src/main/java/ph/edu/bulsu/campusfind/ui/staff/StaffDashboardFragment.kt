@@ -17,6 +17,7 @@ import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
 import ph.edu.bulsu.campusfind.ui.common.Selection
 import ph.edu.bulsu.campusfind.ui.common.SelectionBar
+import ph.edu.bulsu.campusfind.ui.common.TabCounts
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
@@ -53,7 +54,7 @@ class StaffDashboardFragment : Fragment() {
         val turnInAdapter = ItemAdapter { item ->
             nav.navigate(R.id.action_staff_to_detail, bundleOf(NavArgs.ITEM_ID to item.id))
         }
-        // Settled tab: tap opens, long-press selects (closed any time, returned after 30 days).
+        // Settled tab: tap opens, long-press selects. Returned items warn about the pickup code.
         lateinit var settledAdapter: ItemAdapter
         val selection = Selection {
             settledAdapter.notifyDataSetChanged()
@@ -74,7 +75,13 @@ class StaffDashboardFragment : Fragment() {
             val ids = selection.snapshot()
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dialog_delete_title)
-                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_items_body, ids.size, ids.size))
+                .setMessage(
+                    buildString {
+                        append(resources.getQuantityString(R.plurals.dialog_delete_items_body, ids.size, ids.size))
+                        val returnedSelected = settledAdapter.currentList.any { it.id in ids && Settled.deleteNeedsWarning(it) }
+                        if (returnedSelected) append("\n\n").append(getString(R.string.dialog_delete_returned_warning))
+                    },
+                )
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_delete) { _, _ ->
                     viewModel.deleteItems(ids)
@@ -118,6 +125,11 @@ class StaffDashboardFragment : Fragment() {
             }
         }
         collectWhenStarted(viewModel.messages) { showMessage(it) }
+        collectWhenStarted(viewModel.tabCounts) { (pending, turnIn, settled) ->
+            TabCounts.set(binding.tabs.getTabAt(StaffTab.CLAIMS.ordinal), R.string.tab_staff_claims, pending)
+            TabCounts.set(binding.tabs.getTabAt(StaffTab.TURN_IN.ordinal), R.string.tab_staff_turn_in, turnIn)
+            TabCounts.set(binding.tabs.getTabAt(StaffTab.SETTLED.ordinal), R.string.tab_staff_settled, settled)
+        }
 
         // Review claim hands back "Claim approved" or "Claim rejected" here.
         showResultMessages()

@@ -72,6 +72,23 @@
             android:text="@string/action_log_out" />
     </LinearLayout>
 
+    <!-- Students: found items still OPEN that have not reached the CS Office. Tap opens Posts. -->
+    <TextView
+        android:id="@+id/turnInReminder"
+        style="@style/Widget.CampusFind.Row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_margin"
+        android:layout_marginEnd="@dimen/screen_margin"
+        android:layout_marginBottom="@dimen/space_3"
+        android:background="@drawable/bg_chip_pending"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.CampusFind.Body"
+        android:textColor="@color/chip_pending_text"
+        android:visibility="gone" />
+
     <View style="@style/Widget.CampusFind.Divider" />
 
     <com.google.android.material.tabs.TabLayout
@@ -84,9 +101,12 @@
         android:id="@+id/historyHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="@dimen/touch_target"
         android:paddingStart="@dimen/screen_margin"
         android:paddingTop="@dimen/space_3"
         android:paddingEnd="@dimen/screen_margin"
+        android:paddingBottom="@dimen/space_3"
         android:text="@string/hint_history"
         android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium"
         android:visibility="gone" />

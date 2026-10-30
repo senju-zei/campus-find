@@ -88,14 +88,25 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   place. Posting a LOST item now opens its detail. Staff History: heading "Settled", approved and
   rejected records deletable any time; the confirmation warns about the pickup code if an approved
   record is selected (owner choice). Settled tab keeps the 30-day rule for returned items.
-- **Batch 4: Polish + step 7 tests.** Tab counts, badge on the staff icon for pending claims,
-  how-it-works strip on Welcome; reminder in Profile for finders whose Found item is still OPEN.
-  Then the QA agent (`.claude/agents/qa-tester.md`), unit tests (validators, ISBN, transitions,
-  contrast, UI scan) and rules tests R1-R27 + the new multi-claim, pickup code, self-review, color and
-  heldAt rules in `qa/rules/`; add tier 2 to build.yml.
+- **Batch 4: DONE.** Tab counts on Feed, Profile and Staff dashboard (`ui/common/TabCounts.kt`);
+  number badge on the staff icon for pending claims (Material `BadgeUtils`, re-attached in
+  `onPrepareMenu`); "How it works" strip on Welcome; Profile reminder for students with FOUND items
+  still OPEN and not left elsewhere (`heldAt` empty). QA agent `.claude/agents/qa-tester.md`; unit
+  tests in `app/src/test/` (32, incl. contrast T1-7 and UI scan T1-8); rules tests in `qa/rules/`
+  (53, R1-R27 + later rules). build.yml runs tier 2 (JDK 21 + firebase-tools 15.34.2, emulator on
+  port 9010 via `qa/rules/firebase.json`). Report: `qa/QA_REPORT.md`.
+- **Batch 4 owner requests: DONE.** Staff may delete RETURNED items from Settled any time (no 30-day
+  wait; `SETTLED_DELETE_MS` removed); the dialog warns about the pickup code, like History. Students
+  long-press finished (approved or rejected) claims in Profile → Claims to remove them from their own
+  view only: removes `users/{uid}/myClaims/{itemId}`, the claim record stays for staff (no rules
+  change). Staff Profile "Settled" heading centered with equal padding. Feed top bar shows the logo
+  after "Campus Find" (`brandTitle` in `activity_main.xml`).
+- **Next: step 7 tiers 3-7** (Espresso in `app/src/androidTest/`, `qa.yml` on an emulator job).
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 
 ## Watch out for
+- Rules tests: run from `qa/rules` (`npm ci`, then `firebase emulators:exec --only database
+  --project campus-find-86d58 "npm test"`, JDK 21 on PATH). Port 9010 so a dev emulator on 9000 can stay up.
 - Verification emails come from `noreply@campus-find-86d58.firebaseapp.com` and may land in spam or
   the BulSU quarantine.
 - Material 1.12 has no `colorSurfaceTint`; `elevationOverlayEnabled=false` is used instead.

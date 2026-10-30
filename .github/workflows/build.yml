@@ -1,6 +1,6 @@
 # Builds Campus Find on every push to main and publishes the APK to the Release tagged "latest".
-# Tiers 0 and 1 of the QA plan run here (build, lint, unit tests). Step 7 adds tier 2 (rules
-# tests in the Firebase emulator) to this file; a failure in any tier blocks the release.
+# Tiers 0 to 2 of the QA plan run here: build, lint and unit tests, then the database rules
+# tests in the Firebase emulator (qa/rules). A failure in any tier blocks the release.
 name: build
 
 on:
@@ -42,6 +42,25 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew testDebugUnitTest lintDebug assembleDebug --stacktrace
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: qa/rules/package-lock.json
+
+      # Firebase CLI 15 runs the emulator on Java 21; Gradle has already finished with JDK 17.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # qa/rules/firebase.json puts the emulator on port 9010.
+      - name: Tier 2 (database rules in the emulator)
+        working-directory: qa/rules
+        run: |
+          npm ci
+          npx --yes firebase-tools@15.34.2 emulators:exec --only database --project campus-find-86d58 "npm test"
 
       - name: Upload lint and test reports
         if: always()

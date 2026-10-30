@@ -13,6 +13,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.ui.common.Selection
+import ph.edu.bulsu.campusfind.ui.common.TabCounts
+import kotlinx.coroutines.flow.combine
 import ph.edu.bulsu.campusfind.ui.common.SelectionBar
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.showMessage
@@ -71,14 +73,54 @@ class MyActivityFragment : Fragment() {
                 resources.getQuantityString(R.plurals.count_posts, posts, posts),
                 resources.getQuantityString(R.plurals.count_claims, claims, claims),
             ).joinToString(" · ")
+            TabCounts.set(binding.tabs.getTabAt(ActivityTab.POSTS.ordinal), R.string.tab_posts, posts)
+            TabCounts.set(binding.tabs.getTabAt(ActivityTab.CLAIMS.ordinal), R.string.tab_claims, claims)
+        }
+        binding.turnInReminder.setOnClickListener { binding.tabs.getTabAt(ActivityTab.POSTS.ordinal)?.select() }
+        collectWhenStarted(combine(viewModel.turnInReminder, viewModel.isStaff) { count, staff -> if (staff) 0 else count }) { count ->
+            binding.turnInReminder.visibleIf(count > 0)
+            if (count > 0) binding.turnInReminder.text = resources.getQuantityString(R.plurals.reminder_turn_in, count, count)
         }
         val postsAdapter = ItemAdapter { item ->
             nav.navigate(R.id.action_my_activity_to_detail, bundleOf(NavArgs.ITEM_ID to item.id))
         }
-        val claimsAdapter = MyClaimAdapter(
+        // Claims tab: long-press selects finished claims to remove from this Profile only.
+        lateinit var claimsAdapter: MyClaimAdapter
+        val claimsSelection = Selection {
+            claimsAdapter.notifyDataSetChanged()
+            claimsSelectionBar?.update()
+        }
+        claimsAdapter = MyClaimAdapter(
+            selection = claimsSelection,
             onOpen = { row -> nav.navigate(R.id.action_my_activity_to_detail, bundleOf(NavArgs.ITEM_ID to row.claim.itemId)) },
             onClaimAgain = { row -> nav.navigate(R.id.action_my_activity_to_claim, bundleOf(NavArgs.ITEM_ID to row.claim.itemId)) },
+            onSelect = { row ->
+                if (row.claim.itemId in claimsSelection || Settled.claimHideable(row.claim)) {
+                    claimsSelection.toggle(row.claim.itemId)
+                } else {
+                    showMessage(UiMessage(R.string.msg_cannot_remove_pending))
+                }
+            },
         )
+        claimsSelectionBar = SelectionBar(this, claimsSelection) {
+            val ids = claimsSelection.snapshot()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_remove_claims_title)
+                .setMessage(
+                    buildString {
+                        append(resources.getQuantityString(R.plurals.dialog_remove_claims_body, ids.size, ids.size))
+                        val approvedSelected = claimsAdapter.currentList
+                            .any { it.claim.itemId in ids && it.claim.status == ClaimStatus.APPROVED }
+                        if (approvedSelected) append("\n\n").append(getString(R.string.dialog_remove_approved_warning))
+                    },
+                )
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_remove) { _, _ ->
+                    viewModel.hideClaims(ids)
+                    claimsSelectionBar?.finish()
+                }
+                .show()
+        }
         binding.list.layoutManager = LinearLayoutManager(requireContext())
 
         binding.swipe.setColorSchemeResources(R.color.accent)
@@ -90,6 +132,7 @@ class MyActivityFragment : Fragment() {
             // Staff see History instead of Posts and Claims.
             if (state !is ActivityState.Loading) binding.swipe.isRefreshing = false
             if (viewModel.isStaff.value) return@collectWhenStarted
+            if (state !is ActivityState.Claims) claimsSelectionBar?.finish()
             binding.progress.visibleIf(state is ActivityState.Loading)
             binding.error.visibleIf(state is ActivityState.Failed)
             when (state) {
@@ -115,11 +158,13 @@ class MyActivityFragment : Fragment() {
                 }
             }
         }
+        collectWhenStarted(viewModel.messages) { showMessage(it) }
         // The Claim screen ("Claim again") hands back its confirmation here.
         showResultMessages()
     }
 
     private var selectionBar: SelectionBar? = null
+    private var claimsSelectionBar: SelectionBar? = null
 
     /** Staff Profile: History of reviewed claims with long-press delete, instead of the tabs. */
     private fun setUpStaffHistory(nav: NavController) {
@@ -178,7 +223,6 @@ class MyActivityFragment : Fragment() {
                 resources.getQuantityString(R.plurals.count_rejected, rejected, rejected),
             ).joinToString(" · ")
         }
-        collectWhenStarted(viewModel.messages) { showMessage(it) }
     }
 
     private fun showEmpty(empty: Boolean, text: Int, action: Int, onAction: () -> Unit) {
@@ -203,6 +247,8 @@ class MyActivityFragment : Fragment() {
     override fun onDestroyView() {
         selectionBar?.finish()
         selectionBar = null
+        claimsSelectionBar?.finish()
+        claimsSelectionBar = null
         super.onDestroyView()
         _binding = null
     }
