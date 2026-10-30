@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentRegisterBinding
 import ph.edu.bulsu.campusfind.ui.common.check
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
@@ -46,9 +48,15 @@ class RegisterFragment : Fragment() {
             when (event) {
                 is RegisterEvent.GoToLogin -> {
                     val nav = findNavController()
-                    nav.previousBackStackEntry?.savedStateHandle
-                        ?.set(LoginFragment.KEY_REGISTER_MESSAGE, event.message)
-                    nav.popBackStack()
+                    // Keep Welcome under Login when the user came from it; otherwise just
+                    // replace Register with Login.
+                    val fromWelcome = runCatching { nav.getBackStackEntry(R.id.welcomeFragment) }.isSuccess
+                    val action = if (fromWelcome) {
+                        R.id.action_register_to_login
+                    } else {
+                        R.id.action_register_to_login_only
+                    }
+                    nav.navigate(action, bundleOf(LoginFragment.ARG_MESSAGE to event.message))
                 }
                 is RegisterEvent.Show -> showMessage(event.message)
             }

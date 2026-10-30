@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import ph.edu.bulsu.campusfind.core.DbPaths
 import ph.edu.bulsu.campusfind.domain.StatusTransitions
 import ph.edu.bulsu.campusfind.model.Claim
@@ -43,7 +42,7 @@ class ClaimRepository(private val root: DatabaseReference) {
                 "${DbPaths.USERS}/${claimant.uid}/${DbPaths.MY_CLAIMS}/$itemId" to true,
                 "${DbPaths.ITEMS}/$itemId/status" to ItemStatus.CLAIM_PENDING.name,
             ),
-        ).await()
+        ).awaitWrite()
     }
 
     fun observeMyClaim(itemId: String, uid: String): Flow<Claim?> =
@@ -86,7 +85,7 @@ class ClaimRepository(private val root: DatabaseReference) {
                 "$itemPath/status" to ItemStatus.RETURNED.name,
                 "$itemPath/updatedAt" to ServerValue.TIMESTAMP,
             ),
-        ).await()
+        ).awaitWrite()
     }
 
     /** Staff. Claim REJECTED with a reason; item back to TURNED_IN if it was turned in, else OPEN. */
@@ -101,6 +100,6 @@ class ClaimRepository(private val root: DatabaseReference) {
                 "$itemPath/status" to StatusTransitions.rejectTarget(itemTurnedInAt).name,
                 "$itemPath/updatedAt" to ServerValue.TIMESTAMP,
             ),
-        ).await()
+        ).awaitWrite()
     }
 }

@@ -74,11 +74,10 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // Register hands back its confirmation here after creating the account.
-        val handle = findNavController().currentBackStackEntry?.savedStateHandle
-        handle?.getLiveData<UiMessage>(KEY_REGISTER_MESSAGE)?.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                handle.remove<UiMessage>(KEY_REGISTER_MESSAGE)
+        // Register opens Login with its confirmation; show it once, not again after rotation.
+        if (savedInstanceState == null) {
+            @Suppress("DEPRECATION")
+            (arguments?.getSerializable(ARG_MESSAGE) as? UiMessage)?.let { message ->
                 viewModel.syncPendingVerification()
                 showMessage(message)
             }
@@ -99,6 +98,7 @@ class LoginFragment : Fragment() {
     }
 
     companion object {
-        const val KEY_REGISTER_MESSAGE = "register_message"
+        /** Matches the "message" argument of loginFragment in nav_graph.xml. */
+        const val ARG_MESSAGE = "message"
     }
 }

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Step 5 adds the post, my activity and staff dashboard icons. -->
+<!-- Step 6 adds the My activity and Staff dashboard icons. -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_post_item"
+        android:icon="@drawable/ic_add"
+        android:title="@string/cd_post_item"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_log_out"
         android:title="@string/action_log_out"

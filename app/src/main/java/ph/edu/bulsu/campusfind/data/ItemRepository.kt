@@ -4,7 +4,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ServerValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import ph.edu.bulsu.campusfind.core.DbPaths
 import ph.edu.bulsu.campusfind.domain.Isbn
 import ph.edu.bulsu.campusfind.model.Item
@@ -40,7 +39,7 @@ class ItemRepository(private val root: DatabaseReference) {
     /** Readable only by the poster and staff. */
     suspend fun getHiddenDetail(itemId: String): String? =
         root.child(DbPaths.ITEM_SECRETS).child(itemId).child("hiddenDetail")
-            .get().await().getValue(String::class.java)
+            .readOnce().getValue(String::class.java)
 
     /** Writes items/{id} and, for FOUND items, itemSecrets/{id} in one update. Returns the id. */
     suspend fun postItem(draft: ItemDraft, poster: UserProfile): String {
@@ -67,13 +66,13 @@ class ItemRepository(private val root: DatabaseReference) {
         if (draft.type == ItemType.FOUND && !hidden.isNullOrEmpty()) {
             updates["${DbPaths.ITEM_SECRETS}/$itemId"] = mapOf("hiddenDetail" to hidden)
         }
-        root.updateChildren(updates).await()
+        root.updateChildren(updates).awaitWrite()
         return itemId
     }
 
     /** Poster of a LOST item. Only status is written: the rules do not let posters write updatedAt. */
     suspend fun closeLostItem(itemId: String) {
-        items.child(itemId).child("status").setValue(ItemStatus.CLOSED.name).await()
+        items.child(itemId).child("status").setValue(ItemStatus.CLOSED.name).awaitWrite()
     }
 
     /** Clerk or faculty. */
@@ -85,7 +84,7 @@ class ItemRepository(private val root: DatabaseReference) {
                 "$base/turnedInAt" to ServerValue.TIMESTAMP,
                 "$base/updatedAt" to ServerValue.TIMESTAMP,
             ),
-        ).await()
+        ).awaitWrite()
     }
 
     /** Faculty override. */
@@ -96,7 +95,7 @@ class ItemRepository(private val root: DatabaseReference) {
                 "$base/status" to status.name,
                 "$base/updatedAt" to ServerValue.TIMESTAMP,
             ),
-        ).await()
+        ).awaitWrite()
     }
 
     private fun MutableMap<String, Any>.putIfNotBlank(key: String, value: String?) {

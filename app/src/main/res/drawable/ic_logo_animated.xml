@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Welcome animation: the eye glances left and right, then blinks once. -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/ic_logo">
+
+    <target android:name="pupil">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="450"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:startOffset="500"
+                    android:valueFrom="0"
+                    android:valueTo="-6"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="700"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:startOffset="250"
+                    android:valueFrom="-6"
+                    android:valueTo="6"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="450"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="translateX"
+                    android:startOffset="250"
+                    android:valueFrom="6"
+                    android:valueTo="0"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="eye">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="120"
+                    android:propertyName="scaleY"
+                    android:startOffset="2900"
+                    android:valueFrom="1"
+                    android:valueTo="0.1"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="160"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.1"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

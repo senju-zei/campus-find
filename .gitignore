@@ -19,3 +19,6 @@ captures/
 
 # QA tooling
 qa/**/node_modules/
+
+# Firebase emulator logs
+*-debug.log

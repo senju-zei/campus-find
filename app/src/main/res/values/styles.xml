@@ -157,4 +157,40 @@
         <item name="android:layout_height">@dimen/border_width</item>
         <item name="android:background">@color/border</item>
     </style>
+
+    <!-- Found / Lost toggle on Post item. -->
+    <style name="Widget.CampusFind.Button.Toggle" parent="Widget.CampusFind.Button.Outlined">
+        <item name="backgroundTint">@color/toggle_background</item>
+    </style>
+
+    <!-- Dropdown fields (category, location). -->
+    <style name="Widget.CampusFind.TextInputLayout.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxCornerRadiusTopStart">@dimen/radius_control</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_control</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_control</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_control</item>
+        <item name="boxStrokeColor">@color/input_stroke</item>
+        <item name="boxStrokeWidth">@dimen/border_width</item>
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="hintTextColor">@color/accent</item>
+        <item name="android:textColorHint">@color/text_muted</item>
+        <item name="endIconTint">@color/text_muted</item>
+        <item name="hintTextAppearance">@style/TextAppearance.CampusFind.Small</item>
+        <item name="errorTextAppearance">@style/TextAppearance.CampusFind.Small</item>
+    </style>
+
+    <!-- Label above a value on Item detail. -->
+    <style name="Widget.CampusFind.FieldLabel" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_4</item>
+        <item name="android:textAppearance">@style/TextAppearance.CampusFind.Small.Medium</item>
+    </style>
+
+    <style name="Widget.CampusFind.FieldValue" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_1</item>
+        <item name="android:textAppearance">@style/TextAppearance.CampusFind.Large</item>
+    </style>
 </resources>

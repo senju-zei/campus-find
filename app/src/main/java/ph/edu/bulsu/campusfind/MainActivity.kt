@@ -1,6 +1,7 @@
 package ph.edu.bulsu.campusfind
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -35,15 +36,19 @@ class MainActivity : AppCompatActivity() {
         navController = navHost.navController
         // Screens with no back arrow.
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.startFragment, R.id.loginFragment, R.id.feedFragment),
+            setOf(R.id.startFragment, R.id.welcomeFragment, R.id.feedFragment),
         )
         setSupportActionBar(binding.toolbar)
         binding.toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vert)
         setupActionBarWithNavController(navController, appBarConfiguration)
         // NavigationUI sets its own drawer arrow on each destination; this listener runs after
         // it and swaps in the Material Symbols arrow in textMuted.
-        navController.addOnDestinationChangedListener { _, _, _ ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+            // The landing page and the start screen have no top bar.
+            val showBar = destination.id != R.id.welcomeFragment && destination.id != R.id.startFragment
+            binding.toolbar.visibility = if (showBar) View.VISIBLE else View.GONE
+            binding.toolbarDivider.visibility = if (showBar) View.VISIBLE else View.GONE
         }
     }
 

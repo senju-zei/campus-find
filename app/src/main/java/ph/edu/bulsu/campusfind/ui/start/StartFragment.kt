@@ -11,8 +11,8 @@ import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.databinding.FragmentStartBinding
 
 /**
- * Start destination, shown behind the system splash. Signed in and verified goes to Feed;
- * anything else goes to Login, which shows the verification notice when needed.
+ * Start destination, shown behind the system splash. Signed out goes to Welcome; signed in and
+ * verified goes to Feed; signed in but unverified goes to Login, which shows the verification notice.
  * Both actions pop this screen, so Back never returns here.
  */
 class StartFragment : Fragment() {
@@ -31,10 +31,10 @@ class StartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val user = ServiceLocator.authRepository.currentUser
-        val action = if (user != null && user.isEmailVerified) {
-            R.id.action_start_to_feed
-        } else {
-            R.id.action_start_to_login
+        val action = when {
+            user == null -> R.id.action_start_to_welcome
+            user.isEmailVerified -> R.id.action_start_to_feed
+            else -> R.id.action_start_to_login
         }
         findNavController().navigate(action)
     }

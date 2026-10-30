@@ -7,19 +7,29 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.databinding.FragmentFeedBinding
+import ph.edu.bulsu.campusfind.model.ItemType
+import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
+import ph.edu.bulsu.campusfind.ui.common.UiMessage
+import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
+import ph.edu.bulsu.campusfind.ui.common.showMessage
+import ph.edu.bulsu.campusfind.ui.common.visibleIf
 
-/** Step 4 placeholder: proves sign-in works and offers Log out. Step 5 builds the real Feed. */
 class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: FeedViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,9 +41,62 @@ class FeedFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val email = ServiceLocator.authRepository.currentUser?.email.orEmpty()
-        binding.signedInText.text = getString(R.string.feed_placeholder, email)
+        setUpTabs()
+        setUpMenu()
 
+        val adapter = ItemAdapter { item ->
+            findNavController().navigate(R.id.action_feed_to_detail, bundleOf(ARG_ITEM_ID to item.id))
+        }
+        binding.list.layoutManager = LinearLayoutManager(requireContext())
+        binding.list.adapter = adapter
+        binding.emptyAction.setOnClickListener { openPostItem() }
+
+        collectWhenStarted(viewModel.state) { state ->
+            binding.progress.visibleIf(state is FeedState.Loading)
+            binding.error.visibleIf(state is FeedState.Failed)
+            when (state) {
+                FeedState.Loading -> binding.empty.visibleIf(false)
+                is FeedState.Failed -> {
+                    binding.empty.visibleIf(false)
+                    adapter.submitList(emptyList())
+                    binding.error.setText(state.message)
+                }
+                is FeedState.Loaded -> {
+                    adapter.submitList(state.items)
+                    binding.empty.visibleIf(state.items.isEmpty())
+                    binding.emptyText.setText(
+                        if (state.type == ItemType.FOUND) R.string.empty_found else R.string.empty_lost,
+                    )
+                }
+            }
+        }
+
+        // Post item hands back its confirmation here.
+        val handle = findNavController().currentBackStackEntry?.savedStateHandle
+        handle?.getLiveData<UiMessage>(KEY_MESSAGE)?.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                handle.remove<UiMessage>(KEY_MESSAGE)
+                showMessage(message)
+            }
+        }
+    }
+
+    private fun setUpTabs() {
+        val tabs = binding.tabs
+        tabs.addTab(tabs.newTab().setText(R.string.tab_found).setTag(ItemType.FOUND))
+        tabs.addTab(tabs.newTab().setText(R.string.tab_lost).setTag(ItemType.LOST))
+        tabs.getTabAt(if (viewModel.selectedType.value == ItemType.FOUND) 0 else 1)?.select()
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewModel.select(tab.tag as ItemType)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) = Unit
+            override fun onTabReselected(tab: TabLayout.Tab) = Unit
+        })
+    }
+
+    private fun setUpMenu() {
         requireActivity().addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -41,10 +104,14 @@ class FeedFragment : Fragment() {
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
+                    R.id.action_post_item -> {
+                        openPostItem()
+                        true
+                    }
                     R.id.action_log_out -> {
                         ServiceLocator.authRepository.logOut()
-                        // Clears the back stack, so Back from Login does not return to Feed.
-                        findNavController().navigate(R.id.action_global_login)
+                        // Clears the back stack, so Back cannot return to Feed.
+                        findNavController().navigate(R.id.action_global_welcome)
                         true
                     }
                     else -> false
@@ -55,8 +122,22 @@ class FeedFragment : Fragment() {
         )
     }
 
+    /** Opens Post item with the type of the tab the user is on. */
+    private fun openPostItem() {
+        findNavController().navigate(
+            R.id.action_feed_to_post,
+            bundleOf(ARG_TYPE to viewModel.selectedType.value.name),
+        )
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val KEY_MESSAGE = "feed_message"
+        const val ARG_ITEM_ID = "itemId"
+        const val ARG_TYPE = "type"
     }
 }

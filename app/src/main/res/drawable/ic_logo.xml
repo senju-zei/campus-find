@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Campus Find logo: a magnifying glass with an eye in the lens.
+     Groups "eye" and "pupil" are animated by ic_logo_animated.xml. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+
+    <!-- Handle -->
+    <path
+        android:pathData="M60,60 L82,82"
+        android:strokeWidth="10"
+        android:strokeColor="@color/accent"
+        android:strokeLineCap="round" />
+
+    <!-- Lens glass -->
+    <path
+        android:fillColor="@color/surface"
+        android:pathData="M14,40 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0 Z" />
+
+    <group
+        android:name="eye"
+        android:pivotX="40"
+        android:pivotY="40">
+        <!-- Eye outline -->
+        <path
+            android:fillColor="@color/accent_tint"
+            android:pathData="M22,40 Q40,24 58,40 Q40,56 22,40 Z"
+            android:strokeWidth="2.5"
+            android:strokeColor="@color/accent"
+            android:strokeLineJoin="round" />
+        <group android:name="pupil">
+            <path
+                android:fillColor="@color/accent"
+                android:pathData="M33,40 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+            <path
+                android:fillColor="@color/surface"
+                android:pathData="M40.5,37.5 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0 Z" />
+        </group>
+    </group>
+
+    <!-- Lens rim -->
+    <path
+        android:pathData="M14,40 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0 Z"
+        android:strokeWidth="7"
+        android:strokeColor="@color/accent" />
+</vector>

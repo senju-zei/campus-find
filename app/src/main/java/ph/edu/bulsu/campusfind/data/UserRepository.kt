@@ -4,7 +4,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ServerValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import ph.edu.bulsu.campusfind.core.DbPaths
 import ph.edu.bulsu.campusfind.model.UserProfile
 
@@ -20,11 +19,11 @@ class UserRepository(private val root: DatabaseReference) {
             "role" to "student",
             "createdAt" to ServerValue.TIMESTAMP,
         )
-        userRef(uid).setValue(profile).await()
+        userRef(uid).setValue(profile).awaitWrite()
     }
 
     suspend fun getProfile(uid: String): UserProfile? =
-        UserProfile.from(userRef(uid).get().await())
+        UserProfile.from(userRef(uid).readOnce())
 
     fun observeProfile(uid: String): Flow<UserProfile?> =
         userRef(uid).valueEvents().map { UserProfile.from(it) }

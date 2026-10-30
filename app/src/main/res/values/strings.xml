@@ -76,7 +76,6 @@
     <string name="verify_still_unverified">Your email is not verified yet.</string>
     <string name="verify_email_not_sent">Account created. The email could not be sent. Tap Resend email.</string>
     <string name="action_use_another_account">Use another account</string>
-    <string name="feed_placeholder">Signed in as %1$s. Items arrive in the next build.</string>
 
     <!-- Item types -->
     <string name="type_found">Found</string>
@@ -152,6 +151,25 @@
     <string name="error_too_many_requests">Too many attempts. Wait a few minutes and try again.</string>
     <string name="error_permission_denied">This action is not allowed.</string>
     <string name="error_generic">Something went wrong. Try again.</string>
+
+    <!-- Welcome -->
+    <string name="cd_logo">Campus Find logo, a magnifying glass with an eye</string>
+    <string name="welcome_tagline">Lost something on campus? Find it here.</string>
+    <string name="welcome_body">Post what you lost or found. Found items go to the CS Office, and the owner claims them there.</string>
+    <string name="welcome_staff_note">CS Office staff: create an account, then ask the admin to turn on staff access.</string>
+    <string name="welcome_pilot">College of Science pilot</string>
+
+    <!-- Post item -->
+    <string name="hint_isbn">10 or 13 digits, on the back cover.</string>
+    <string name="hint_room">For example, Chem Lab 2.</string>
+    <string name="label_book_details">Book details</string>
+    <string name="book_filled">Book details filled in.</string>
+    <string name="error_select_option">Choose one.</string>
+    <string name="error_profile_missing">Your profile is missing. Log out and log in again.</string>
+
+    <!-- Item detail -->
+    <string name="label_just_now">Just now</string>
+    <string name="detail_value_none">Not given</string>
 
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="locations">
