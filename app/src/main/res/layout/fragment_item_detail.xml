@@ -165,6 +165,36 @@
                 style="@style/Widget.CampusFind.FieldValue" />
         </LinearLayout>
 
+        <!-- Own LOST item: found items that might be it. -->
+        <LinearLayout
+            android:id="@+id/matchesSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_6"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_might_be_yours"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large.Medium" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:layout_marginBottom="@dimen/space_3"
+                android:text="@string/hint_might_be_yours"
+                android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/matchesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+
         <!-- Turned-in items: the owner can look at the real item before claiming. -->
         <TextView
             android:id="@+id/seeAtOffice"

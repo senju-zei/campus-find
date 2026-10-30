@@ -23,13 +23,9 @@ object Settled {
         else -> false
     }
 
-    /**
-     * A reviewed claim record (staff History): approved ones follow [deletable], so the pickup code
-     * stays until the item can go; rejected ones once the item has settled. Gone items: any time.
-     */
-    fun recordDeletable(claim: Claim, item: Item?, now: Long): Boolean = when {
-        item == null -> true
-        claim.status == ClaimStatus.APPROVED -> deletable(item, now)
-        else -> isSettled(item)
-    }
+    /** A reviewed claim record (staff History) can always be deleted. */
+    @Suppress("UNUSED_PARAMETER")
+    fun recordDeletable(claim: Claim, item: Item?, now: Long): Boolean =
+        // Owner decision: staff may delete any reviewed record; approved ones warn about the pickup code.
+        claim.status != ClaimStatus.PENDING
 }

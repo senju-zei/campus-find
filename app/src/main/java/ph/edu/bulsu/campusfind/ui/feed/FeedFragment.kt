@@ -7,7 +7,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.content.res.ColorStateList
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.chip.Chip
+import ph.edu.bulsu.campusfind.core.Constants
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -50,9 +55,15 @@ class FeedFragment : Fragment() {
         binding.list.layoutManager = LinearLayoutManager(requireContext())
         binding.list.adapter = adapter
         binding.emptyAction.setOnClickListener { openPostItem() }
+        binding.swipe.setColorSchemeResources(R.color.accent)
+        binding.swipe.setProgressBackgroundColorSchemeResource(R.color.surface)
+        binding.swipe.setOnRefreshListener { viewModel.refresh() }
+        binding.searchInput.doAfterTextChanged { viewModel.search(it?.toString().orEmpty()) }
+        setUpCategoryChips()
 
         collectWhenStarted(viewModel.state) { state ->
-            binding.progress.visibleIf(state is FeedState.Loading)
+            binding.progress.visibleIf(state is FeedState.Loading && !binding.swipe.isRefreshing)
+            if (state !is FeedState.Loading) binding.swipe.isRefreshing = false
             binding.error.visibleIf(state is FeedState.Failed)
             when (state) {
                 FeedState.Loading -> binding.empty.visibleIf(false)
@@ -65,8 +76,13 @@ class FeedFragment : Fragment() {
                     adapter.submitList(state.items)
                     binding.empty.visibleIf(state.items.isEmpty())
                     binding.emptyText.setText(
-                        if (state.type == ItemType.FOUND) R.string.empty_found else R.string.empty_lost,
+                        when {
+                            state.filtered -> R.string.empty_search
+                            state.type == ItemType.FOUND -> R.string.empty_found
+                            else -> R.string.empty_lost
+                        },
                     )
+                    binding.emptyAction.visibleIf(!state.filtered)
                 }
             }
         }
@@ -75,6 +91,29 @@ class FeedFragment : Fragment() {
 
         // Post item hands back its confirmation here.
         showResultMessages()
+    }
+
+    /** "All" plus one chip per category; filters the list on the phone. */
+    private fun setUpCategoryChips() {
+        val context = requireContext()
+        val labels = listOf(getString(R.string.filter_all)) + resources.getStringArray(R.array.categories)
+        val values = listOf<String?>(null) + Constants.CATEGORIES
+        labels.forEachIndexed { index, label ->
+            val chip = Chip(context).apply {
+                id = View.generateViewId()
+                text = label
+                isCheckable = true
+                isCheckedIconVisible = false
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(resources.getDimension(R.dimen.radius_control))
+                chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.toggle_background)
+                chipStrokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.border))
+                chipStrokeWidth = resources.getDimension(R.dimen.border_width)
+                setTextColor(ContextCompat.getColor(context, R.color.text))
+                isChecked = values[index] == viewModel.category.value
+                setOnCheckedChangeListener { _, checked -> if (checked) viewModel.filterCategory(values[index]) }
+            }
+            binding.categoryGroup.addView(chip)
+        }
     }
 
     private fun setUpTabs() {

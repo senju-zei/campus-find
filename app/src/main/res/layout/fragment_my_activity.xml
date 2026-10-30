@@ -88,7 +88,7 @@
         android:paddingTop="@dimen/space_3"
         android:paddingEnd="@dimen/screen_margin"
         android:text="@string/hint_history"
-        android:textAppearance="@style/TextAppearance.CampusFind.Small"
+        android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium"
         android:visibility="gone" />
 
     <View style="@style/Widget.CampusFind.Divider" />
@@ -98,15 +98,21 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingStart="@dimen/screen_margin"
-            android:paddingTop="@dimen/space_4"
-            android:paddingEnd="@dimen/screen_margin"
-            android:paddingBottom="@dimen/space_4" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/screen_margin"
+                android:paddingTop="@dimen/space_4"
+                android:paddingEnd="@dimen/screen_margin"
+                android:paddingBottom="@dimen/space_4" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <LinearLayout
             android:id="@+id/empty"

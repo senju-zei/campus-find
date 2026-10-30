@@ -17,6 +17,7 @@ import ph.edu.bulsu.campusfind.domain.CoverUrlBuilder
 import ph.edu.bulsu.campusfind.domain.Isbn
 import ph.edu.bulsu.campusfind.model.BookLookupResult
 import ph.edu.bulsu.campusfind.model.ItemDraft
+import ph.edu.bulsu.campusfind.model.ItemType
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import java.io.IOException
@@ -31,7 +32,7 @@ data class PostUiState(
 sealed interface PostEvent {
     data class BookFound(val title: String, val authors: String?) : PostEvent
     data class Show(val message: UiMessage, val offerRetry: Boolean = false) : PostEvent
-    data object Posted : PostEvent
+    data class Posted(val itemId: String, val type: ItemType) : PostEvent
 }
 
 class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
@@ -99,8 +100,8 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
                 if (poster == null) {
                     _events.send(PostEvent.Show(UiMessage(R.string.error_profile_missing)))
                 } else {
-                    items.postItem(draft.copy(coverUrl = _state.value.coverUrl), poster)
-                    _events.send(PostEvent.Posted)
+                    val id = items.postItem(draft.copy(coverUrl = _state.value.coverUrl), poster)
+                    _events.send(PostEvent.Posted(id, draft.type))
                 }
             } catch (e: Exception) {
                 _events.send(PostEvent.Show(UiMessage(ErrorMessages.forException(e))))

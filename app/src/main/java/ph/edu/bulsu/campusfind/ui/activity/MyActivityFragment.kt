@@ -81,10 +81,14 @@ class MyActivityFragment : Fragment() {
         )
         binding.list.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.swipe.setColorSchemeResources(R.color.accent)
+        binding.swipe.setProgressBackgroundColorSchemeResource(R.color.surface)
+        binding.swipe.setOnRefreshListener { viewModel.refresh() }
         setUpStaffHistory(nav)
 
         collectWhenStarted(viewModel.state) { state ->
             // Staff see History instead of Posts and Claims.
+            if (state !is ActivityState.Loading) binding.swipe.isRefreshing = false
             if (viewModel.isStaff.value) return@collectWhenStarted
             binding.progress.visibleIf(state is ActivityState.Loading)
             binding.error.visibleIf(state is ActivityState.Failed)
@@ -141,7 +145,13 @@ class MyActivityFragment : Fragment() {
             val keys = selection.snapshot()
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dialog_delete_title)
-                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_records_body, keys.size, keys.size))
+                .setMessage(
+                    buildString {
+                        append(resources.getQuantityString(R.plurals.dialog_delete_records_body, keys.size, keys.size))
+                        val approvedSelected = adapter.currentList.any { it.key in keys && it.claim.status == ClaimStatus.APPROVED }
+                        if (approvedSelected) append("\n\n").append(getString(R.string.dialog_delete_approved_warning))
+                    },
+                )
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_delete) { _, _ ->
                     viewModel.deleteHistory(keys)
@@ -151,6 +161,7 @@ class MyActivityFragment : Fragment() {
         }
         collectWhenStarted(viewModel.history) { rows ->
             if (rows == null) return@collectWhenStarted
+            binding.swipe.isRefreshing = false
             binding.tabs.visibleIf(false)
             binding.historyHint.visibleIf(true)
             binding.progress.visibleIf(false)

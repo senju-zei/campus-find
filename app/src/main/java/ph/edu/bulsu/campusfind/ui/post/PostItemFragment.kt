@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ArrayRes
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -104,7 +106,13 @@ class PostItemFragment : Fragment() {
                 } else {
                     showMessage(event.message)
                 }
-                PostEvent.Posted -> popWithMessage(UiMessage(R.string.msg_item_posted))
+                // A lost item opens its detail, where "Might be yours" lists similar found items.
+                is PostEvent.Posted -> if (event.type == ItemType.LOST) {
+                    findNavController().navigate(R.id.action_post_to_detail, bundleOf(NavArgs.ITEM_ID to event.itemId))
+                    showMessage(UiMessage(R.string.msg_item_posted))
+                } else {
+                    popWithMessage(UiMessage(R.string.msg_item_posted))
+                }
             }
         }
     }

@@ -15,6 +15,8 @@ import ph.edu.bulsu.campusfind.model.Claim
 import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.model.ItemStatus
+import androidx.recyclerview.widget.LinearLayoutManager
+import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
 import ph.edu.bulsu.campusfind.ui.common.ItemUi
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
@@ -89,6 +91,15 @@ class ItemDetailFragment : Fragment() {
             binding.changeStatusButton.isEnabled = !busy
         }
         collectWhenStarted(viewModel.messages) { showMessage(it) }
+        val matchesAdapter = ItemAdapter { match ->
+            findNavController().navigate(R.id.action_detail_self, bundleOf(NavArgs.ITEM_ID to match.id))
+        }
+        binding.matchesList.layoutManager = LinearLayoutManager(requireContext())
+        binding.matchesList.adapter = matchesAdapter
+        collectWhenStarted(viewModel.matches) { list ->
+            binding.matchesSection.visibleIf(list.isNotEmpty())
+            matchesAdapter.submitList(list)
+        }
         // The Claim screen hands back its confirmation here.
         showResultMessages()
     }

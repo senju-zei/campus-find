@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -50,6 +52,11 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
     private val claims = ServiceLocator.claimRepository
     private val uid = ServiceLocator.authRepository.currentUser?.uid
 
+    /** Swipe-down refresh: bumping it re-subscribes to the database. */
+    private val refresh = MutableStateFlow(0)
+
+    fun refresh() = refresh.update { it + 1 }
+
     /** Profile header: name, email, role and counts. */
     val profile: StateFlow<UserProfile?> = (uid?.let { ServiceLocator.userRepository.observeProfile(it) } ?: flowOf(null))
         .catch { emit(null) }
@@ -70,7 +77,7 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
 
     /** Staff only (null for students): claims I approved or rejected, newest first. */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val history: StateFlow<List<HistoryRow>?> = isStaff.flatMapLatest { staff ->
+    val history: StateFlow<List<HistoryRow>?> = combine(isStaff, refresh) { staff, _ -> staff }.flatMapLatest { staff ->
         if (!staff || uid == null) {
             flowOf(null)
         } else {
@@ -112,7 +119,7 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val state: StateFlow<ActivityState> = selectedTab
+    val state: StateFlow<ActivityState> = combine(selectedTab, refresh) { tab, _ -> tab }
         .flatMapLatest { tab ->
             val source: Flow<ActivityState> = when {
                 uid == null -> flowOf(ActivityState.Posts(emptyList()))

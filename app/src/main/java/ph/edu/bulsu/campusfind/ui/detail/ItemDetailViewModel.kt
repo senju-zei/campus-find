@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.core.ServiceLocator
+import ph.edu.bulsu.campusfind.domain.ItemSearch
 import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.domain.StatusTransitions
 import ph.edu.bulsu.campusfind.model.Claim
@@ -88,6 +89,19 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
                 .catch { emit(null) }
         }
     }
+
+    /** Own LOST item only: found items that might be it (category, color, place, last 14 days). */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val matches: StateFlow<List<Item>> = items.observeItem(itemId)
+        .flatMapLatest { lost ->
+            if (lost == null || lost.type != ItemType.LOST || lost.postedBy != uid || lost.status != ItemStatus.OPEN) {
+                flowOf(emptyList())
+            } else {
+                items.observeByType(ItemType.FOUND).map { ItemSearch.suggestionsFor(lost, it) }
+            }
+        }
+        .catch { emit(emptyList()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
     /** Live: claims and staff changes made on other phones show without a refresh. */
     val state: StateFlow<DetailState> =

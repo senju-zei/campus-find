@@ -81,10 +81,13 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   any time, RETURNED items and their approved records 30 days after settling, rejected records once the
   item settled. The old "Delete items settled over 30 days ago" button was replaced by multi-select.
   No rules change (staff could already delete claims and items).
-- **Batch 3: Search and filter + match suggestions + swipe-down refresh.** Feed search box and
-  chips (category, color; text matches title, brand, description). After posting a Lost item, show
-  "Might be yours": Found items with same category (and color/location) from the last 14 days.
-  SwipeRefreshLayout on Feed and Profile (re-subscribe; shows "No connection" if offline). No rules change.
+- **Batch 3: DONE.** Feed search box (every word must match title, brand, color, category, place,
+  description, authors or ISBN; `domain/ItemSearch.kt`) and category chips ("All" + categories), both
+  on the phone. Swipe-down refresh on Feed and Profile (re-subscribes). "Might be yours" on the poster's
+  own OPEN lost item: up to 5 found items, same category, within 14 days, same color first then same
+  place. Posting a LOST item now opens its detail. Staff History: heading "Settled", approved and
+  rejected records deletable any time; the confirmation warns about the pickup code if an approved
+  record is selected (owner choice). Settled tab keeps the 30-day rule for returned items.
 - **Batch 4: Polish + step 7 tests.** Tab counts, badge on the staff icon for pending claims,
   how-it-works strip on Welcome; reminder in Profile for finders whose Found item is still OPEN.
   Then the QA agent (`.claude/agents/qa-tester.md`), unit tests (validators, ISBN, transitions,
