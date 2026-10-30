@@ -96,6 +96,12 @@
         <action
             android:id="@+id/action_feed_to_detail"
             app:destination="@id/itemDetailFragment" />
+        <action
+            android:id="@+id/action_feed_to_my_activity"
+            app:destination="@id/myActivityFragment" />
+        <action
+            android:id="@+id/action_feed_to_staff"
+            app:destination="@id/staffDashboardFragment" />
     </fragment>
 
     <fragment
@@ -116,6 +122,61 @@
         tools:layout="@layout/fragment_item_detail">
         <argument
             android:name="itemId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_detail_to_claim"
+            app:destination="@id/claimFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/claimFragment"
+        android:name="ph.edu.bulsu.campusfind.ui.claim.ClaimFragment"
+        android:label="@string/title_claim"
+        tools:layout="@layout/fragment_claim">
+        <argument
+            android:name="itemId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myActivityFragment"
+        android:name="ph.edu.bulsu.campusfind.ui.activity.MyActivityFragment"
+        android:label="@string/title_my_activity"
+        tools:layout="@layout/fragment_my_activity">
+        <action
+            android:id="@+id/action_my_activity_to_detail"
+            app:destination="@id/itemDetailFragment" />
+        <action
+            android:id="@+id/action_my_activity_to_claim"
+            app:destination="@id/claimFragment" />
+        <action
+            android:id="@+id/action_my_activity_to_post"
+            app:destination="@id/postItemFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/staffDashboardFragment"
+        android:name="ph.edu.bulsu.campusfind.ui.staff.StaffDashboardFragment"
+        android:label="@string/title_staff_dashboard"
+        tools:layout="@layout/fragment_staff_dashboard">
+        <action
+            android:id="@+id/action_staff_to_review"
+            app:destination="@id/reviewClaimFragment" />
+        <action
+            android:id="@+id/action_staff_to_detail"
+            app:destination="@id/itemDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewClaimFragment"
+        android:name="ph.edu.bulsu.campusfind.ui.staff.ReviewClaimFragment"
+        android:label="@string/title_review_claim"
+        tools:layout="@layout/fragment_review_claim">
+        <argument
+            android:name="itemId"
+            app:argType="string" />
+        <argument
+            android:name="claimant"
             app:argType="string" />
     </fragment>
 </navigation>

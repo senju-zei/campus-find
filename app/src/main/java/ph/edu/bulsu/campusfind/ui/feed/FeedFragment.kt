@@ -20,9 +20,9 @@ import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.databinding.FragmentFeedBinding
 import ph.edu.bulsu.campusfind.model.ItemType
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
-import ph.edu.bulsu.campusfind.ui.common.UiMessage
+import ph.edu.bulsu.campusfind.ui.common.NavArgs
+import ph.edu.bulsu.campusfind.ui.common.showResultMessages
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
-import ph.edu.bulsu.campusfind.ui.common.showMessage
 import ph.edu.bulsu.campusfind.ui.common.visibleIf
 
 class FeedFragment : Fragment() {
@@ -45,7 +45,7 @@ class FeedFragment : Fragment() {
         setUpMenu()
 
         val adapter = ItemAdapter { item ->
-            findNavController().navigate(R.id.action_feed_to_detail, bundleOf(ARG_ITEM_ID to item.id))
+            findNavController().navigate(R.id.action_feed_to_detail, bundleOf(NavArgs.ITEM_ID to item.id))
         }
         binding.list.layoutManager = LinearLayoutManager(requireContext())
         binding.list.adapter = adapter
@@ -71,14 +71,10 @@ class FeedFragment : Fragment() {
             }
         }
 
+        collectWhenStarted(viewModel.isStaff) { requireActivity().invalidateMenu() }
+
         // Post item hands back its confirmation here.
-        val handle = findNavController().currentBackStackEntry?.savedStateHandle
-        handle?.getLiveData<UiMessage>(KEY_MESSAGE)?.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                handle.remove<UiMessage>(KEY_MESSAGE)
-                showMessage(message)
-            }
-        }
+        showResultMessages()
     }
 
     private fun setUpTabs() {
@@ -103,9 +99,21 @@ class FeedFragment : Fragment() {
                     menuInflater.inflate(R.menu.menu_feed, menu)
                 }
 
+                override fun onPrepareMenu(menu: Menu) {
+                    menu.findItem(R.id.action_staff_dashboard)?.isVisible = viewModel.isStaff.value
+                }
+
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
                     R.id.action_post_item -> {
                         openPostItem()
+                        true
+                    }
+                    R.id.action_my_activity -> {
+                        findNavController().navigate(R.id.action_feed_to_my_activity)
+                        true
+                    }
+                    R.id.action_staff_dashboard -> {
+                        findNavController().navigate(R.id.action_feed_to_staff)
                         true
                     }
                     R.id.action_log_out -> {
@@ -126,18 +134,12 @@ class FeedFragment : Fragment() {
     private fun openPostItem() {
         findNavController().navigate(
             R.id.action_feed_to_post,
-            bundleOf(ARG_TYPE to viewModel.selectedType.value.name),
+            bundleOf(NavArgs.TYPE to viewModel.selectedType.value.name),
         )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        const val KEY_MESSAGE = "feed_message"
-        const val ARG_ITEM_ID = "itemId"
-        const val ARG_TYPE = "type"
     }
 }

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Claim a FOUND item. "Submit claim" is the only filled button. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_margin">
+
+        <LinearLayout
+            style="@style/Widget.CampusFind.Row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="@null"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/picture"
+                android:layout_width="@dimen/badge_size_row"
+                android:layout_height="@dimen/badge_size_row"
+                android:background="@color/accent_tint"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.CampusFind.Control" />
+
+            <TextView
+                android:id="@+id/itemTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_3"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large.Medium" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:text="@string/claim_intro"
+            android:textAppearance="@style/TextAppearance.CampusFind.Body.Muted" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/detailsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:hint="@string/field_claim_details"
+            app:counterEnabled="true"
+            app:counterMaxLength="500"
+            app:helperText="@string/hint_claim_details"
+            app:helperTextEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/detailsInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:inputType="textCapSentences|textMultiLine"
+                android:minLines="4"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/whenWhereLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_2"
+            android:hint="@string/field_when_where"
+            app:counterEnabled="true"
+            app:counterMaxLength="200"
+            app:helperText="@string/hint_optional"
+            app:helperTextEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/whenWhereInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/contactLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_2"
+            android:hint="@string/field_contact_note"
+            app:counterEnabled="true"
+            app:counterMaxLength="200"
+            app:helperText="@string/hint_optional"
+            app:helperTextEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/contactInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/submitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_6"
+            android:text="@string/action_submit_claim" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:indeterminate="true"
+            android:visibility="invisible" />
+    </LinearLayout>
+</ScrollView>

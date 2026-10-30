@@ -117,6 +117,51 @@
                 style="@style/Widget.CampusFind.FieldValue" />
         </LinearLayout>
 
+        <!-- The signed-in student's own claim on this item, if any. -->
+        <LinearLayout
+            android:id="@+id/claimBox"
+            style="@style/Widget.CampusFind.Row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_6"
+            android:foreground="@null"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_your_claim"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Body.Medium" />
+
+                <TextView
+                    android:id="@+id/claimStatusChip"
+                    style="@style/Widget.CampusFind.StatusChip" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/claimNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_2"
+                android:textAppearance="@style/TextAppearance.CampusFind.Body" />
+
+            <TextView
+                android:id="@+id/claimReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:textAppearance="@style/TextAppearance.CampusFind.Body.Muted"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -131,12 +176,30 @@
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/markTurnedInButton"
+            style="@style/Widget.CampusFind.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_2"
+            android:text="@string/action_mark_turned_in"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/closeReportButton"
             style="@style/Widget.CampusFind.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_2"
             android:text="@string/action_close_report"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/changeStatusButton"
+            style="@style/Widget.CampusFind.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_1"
+            android:text="@string/action_change_status"
             android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

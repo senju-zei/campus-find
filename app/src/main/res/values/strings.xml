@@ -171,6 +171,23 @@
     <string name="label_just_now">Just now</string>
     <string name="detail_value_none">Not given</string>
 
+    <!-- Claim -->
+    <string name="claim_intro">Describe the item so the CS Office can check that it is yours. Only staff read this.</string>
+    <string name="label_your_claim">Your claim</string>
+    <string name="claim_pending_note">The CS Office is reviewing your claim.</string>
+    <string name="claim_rejected_note">Your claim was not accepted. You can claim again with more detail.</string>
+
+    <!-- Staff -->
+    <string name="tab_staff_claims">Claims</string>
+    <string name="tab_staff_turn_in">To turn in</string>
+    <string name="label_finder_detail">Finder\'s hidden detail</string>
+    <string name="label_claimant_description">Claimant\'s description</string>
+    <string name="label_claimed_by">%1$s · %2$s</string>
+    <string name="hint_reject_reason">The claimant sees this reason.</string>
+    <string name="hint_tap_review">Tap a claim to review it.</string>
+    <string name="error_staff_only">Staff access only.</string>
+    <string name="dialog_change_status_title">Change status</string>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="locations">
         <item>CS Office</item>

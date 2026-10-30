@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -26,6 +27,13 @@ sealed interface FeedState {
 class FeedViewModel(private val handle: SavedStateHandle) : ViewModel() {
 
     private val items = ServiceLocator.itemRepository
+
+    /** Shows the Staff dashboard icon for clerks and faculty. The rules still guard every staff action. */
+    val isStaff: StateFlow<Boolean> = ServiceLocator.authRepository.currentUser?.uid
+        ?.let { uid -> ServiceLocator.userRepository.observeProfile(uid).map { it?.role?.isStaff == true } }
+        ?.catch { emit(false) }
+        ?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
+        ?: MutableStateFlow(false)
 
     /** The selected tab, kept across rotation and process death. */
     val selectedType: StateFlow<ItemType> = handle.getStateFlow(KEY_TYPE, ItemType.FOUND)

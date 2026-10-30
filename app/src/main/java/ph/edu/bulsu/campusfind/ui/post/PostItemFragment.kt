@@ -9,7 +9,6 @@ import androidx.annotation.ArrayRes
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -20,13 +19,14 @@ import ph.edu.bulsu.campusfind.domain.Isbn
 import ph.edu.bulsu.campusfind.domain.TextRules
 import ph.edu.bulsu.campusfind.model.ItemDraft
 import ph.edu.bulsu.campusfind.model.ItemType
+import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.check
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
+import ph.edu.bulsu.campusfind.ui.common.popWithMessage
 import ph.edu.bulsu.campusfind.ui.common.showMessage
 import ph.edu.bulsu.campusfind.ui.common.text
 import ph.edu.bulsu.campusfind.ui.common.visibleIf
-import ph.edu.bulsu.campusfind.ui.feed.FeedFragment
 
 class PostItemFragment : Fragment() {
 
@@ -45,7 +45,7 @@ class PostItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            val start = arguments?.getString(FeedFragment.ARG_TYPE)
+            val start = arguments?.getString(NavArgs.TYPE)
             binding.typeGroup.check(if (start == ItemType.LOST.name) R.id.typeLost else R.id.typeFound)
         }
         binding.typeGroup.addOnButtonCheckedListener { _, _, _ -> updateSections() }
@@ -98,12 +98,7 @@ class PostItemFragment : Fragment() {
                 } else {
                     showMessage(event.message)
                 }
-                PostEvent.Posted -> {
-                    val nav = findNavController()
-                    nav.previousBackStackEntry?.savedStateHandle
-                        ?.set(FeedFragment.KEY_MESSAGE, UiMessage(R.string.msg_item_posted))
-                    nav.popBackStack()
-                }
+                PostEvent.Posted -> popWithMessage(UiMessage(R.string.msg_item_posted))
             }
         }
     }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A pending claim beside the finder's hidden detail. Tap to review. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CampusFind.Row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_2"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/picture"
+            android:layout_width="@dimen/badge_size_row"
+            android:layout_height="@dimen/badge_size_row"
+            android:background="@color/accent_tint"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.CampusFind.Control" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_3"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.CampusFind.Large.Medium" />
+
+            <TextView
+                android:id="@+id/meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        style="@style/Widget.CampusFind.FieldLabel"
+        android:layout_marginTop="@dimen/space_3"
+        android:text="@string/label_finder_detail" />
+
+    <TextView
+        android:id="@+id/hiddenDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_1"
+        android:background="@drawable/bg_chip_type"
+        android:padding="@dimen/space_2"
+        android:textAppearance="@style/TextAppearance.CampusFind.Body" />
+
+    <TextView
+        style="@style/Widget.CampusFind.FieldLabel"
+        android:layout_marginTop="@dimen/space_2"
+        android:text="@string/label_claimant_description" />
+
+    <TextView
+        android:id="@+id/claimText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_1"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textAppearance="@style/TextAppearance.CampusFind.Body" />
+</LinearLayout>

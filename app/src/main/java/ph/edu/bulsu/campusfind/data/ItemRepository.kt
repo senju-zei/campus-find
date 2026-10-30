@@ -36,6 +36,11 @@ class ItemRepository(private val root: DatabaseReference) {
     fun observeItem(itemId: String): Flow<Item?> =
         items.child(itemId).valueEvents().map { Item.from(it) }
 
+    /** Live hidden detail. Readable only by the poster and staff. */
+    fun observeHiddenDetail(itemId: String): Flow<String?> =
+        root.child(DbPaths.ITEM_SECRETS).child(itemId).child("hiddenDetail").valueEvents()
+            .map { it.getValue(String::class.java) }
+
     /** Readable only by the poster and staff. */
     suspend fun getHiddenDetail(itemId: String): String? =
         root.child(DbPaths.ITEM_SECRETS).child(itemId).child("hiddenDetail")
