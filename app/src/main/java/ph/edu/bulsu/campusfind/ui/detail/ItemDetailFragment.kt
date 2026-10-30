@@ -108,6 +108,10 @@ class ItemDetailFragment : Fragment() {
         }
         binding.description.text = item.publicDescription?.takeIf { it.isNotBlank() } ?: none
 
+        // Only while the item is still OPEN; once turned in it is at the CS Office.
+        val heldAt = item.heldAt?.takeIf { item.status == ItemStatus.OPEN }
+        binding.heldAtRow.visibleIf(heldAt != null)
+        binding.heldAt.text = heldAt
         val colorLabel = ItemUi.colorLabel(context, item.color)
         binding.colorRow.visibleIf(colorLabel != null)
         binding.color.text = colorLabel

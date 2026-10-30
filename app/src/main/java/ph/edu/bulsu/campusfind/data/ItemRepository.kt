@@ -64,6 +64,7 @@ class ItemRepository(private val root: DatabaseReference) {
             putIfNotBlank("coverUrl", draft.coverUrl)
             putIfNotBlank("color", draft.color)
             putIfNotBlank("brand", draft.brand)
+            putIfNotBlank("heldAt", draft.heldAt)
             // turnedInAt is left out until a clerk marks the item turned in.
             put("createdAt", ServerValue.TIMESTAMP)
             put("updatedAt", ServerValue.TIMESTAMP)

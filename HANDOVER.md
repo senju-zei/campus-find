@@ -54,21 +54,36 @@ Read this first in a new session, together with `Campus_Find.md` (the plan, in t
 - **Private pickup code**: on approval a random 6-digit code is stored on the approved claim
   (`pickupCode`). Only that claimant and staff can read it (claims are already private).
 
-## Next, in this order
-1. **Start here.** Staff cannot approve their own claim (rules: staff write on `claims/$itemId/$claimUid` requires
-   `$claimUid !== auth.uid`; app hides Approve/Reject on own claim). Owner to confirm: staff may claim.
-2. Turn-in notice on Post item (Found): "Please bring the item to the CS Office", or "I left it somewhere
-   else" + "Where is it now?" (new optional item field `heldAt`, <= 100 chars; rules + publish).
-   Show it on Item detail and on the staff "To turn in" tab.
-3. Trash / Settled tab (staff only): RETURNED and CLOSED items leave Feed (owner to choose: after 3
-   days or immediately), stay in My activity; staff can delete permanently with confirmation, or archive
-   (owner to choose). Rules must let staff delete `itemSecrets/{id}` and claims.
-4. Search and filter on Feed (text, category, color, brand), client-side only.
-5. Match suggestions after posting a Lost item (category + location + color, last 14 days).
-6. Polish (tab counts, staff icon badge, how-it-works on Welcome), then Profile page.
-7. Step 7: QA agent (`.claude/agents/qa-tester.md`), unit tests, rules tests in `qa/rules/`.
-Later: real item photos (Lost public, Found staff only; compressed in the database or Firebase
-Storage on the Blaze plan), notifications, auto-close.
+## Batch 1: DONE
+- **Clerks and faculty cannot claim at all** (owner decision): the claim rule and the CLAIM_PENDING
+  status rule require role `student`; Item detail hides "Claim item" for staff. As a second guard the
+  staff branch also has `$claimUid !== auth.uid`, and Review claim hides Approve/Reject on an own claim.
+  Rules published (7675 chars).
+- Profile page = My activity with a header (initials, name, email, role chip, counts) and Log out.
+  The Feed icon is now a person icon; Log out left the Feed menu.
+- Post item (Found): "Please bring the item to the CS Office" notice + "I left it somewhere else" ->
+  "Where is it now?" (new item field `heldAt`, <= 100). Shown as "Now at: ..." in lists and
+  "Where it is now" on Item detail while the item is OPEN. Rules published (7545 chars).
+
+## Next: one batch per new session
+Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
+- **Batch 2: Trash / Settled tab (staff only).** RETURNED and CLOSED items leave Feed 3 days after
+  `updatedAt` (client filter), stay in Profile (Posts/Claims). Staff "Settled" tab lists them; "Delete
+  permanently" only for items settled more than 30 days ago, with a confirmation ("removes it for
+  everyone, cannot be undone"). Rules must let staff delete `itemSecrets/{id}` (today `!data.exists()`
+  blocks it) and claims; publish rules.
+  Note: CLOSED by a poster does not set `updatedAt` (rules block it for posters); use `createdAt` or
+  allow posters to write `updatedAt` when closing.
+- **Batch 3: Search and filter + match suggestions + swipe-down refresh.** Feed search box and
+  chips (category, color; text matches title, brand, description). After posting a Lost item, show
+  "Might be yours": Found items with same category (and color/location) from the last 14 days.
+  SwipeRefreshLayout on Feed and Profile (re-subscribe; shows "No connection" if offline). No rules change.
+- **Batch 4: Polish + step 7 tests.** Tab counts, badge on the staff icon for pending claims,
+  how-it-works strip on Welcome; reminder in Profile for finders whose Found item is still OPEN.
+  Then the QA agent (`.claude/agents/qa-tester.md`), unit tests (validators, ISBN, transitions,
+  contrast, UI scan) and rules tests R1-R27 + the new multi-claim, pickup code, self-review, color and
+  heldAt rules in `qa/rules/`; add tier 2 to build.yml.
+- Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 
 ## Watch out for
 - Verification emails come from `noreply@campus-find-86d58.firebaseapp.com` and may land in spam or

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.model.Claim
 import ph.edu.bulsu.campusfind.model.Item
+import ph.edu.bulsu.campusfind.model.UserProfile
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
 
 enum class ActivityTab { POSTS, CLAIMS }
@@ -37,6 +38,21 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
     private val items = ServiceLocator.itemRepository
     private val claims = ServiceLocator.claimRepository
     private val uid = ServiceLocator.authRepository.currentUser?.uid
+
+    /** Profile header: name, email, role and counts. */
+    val profile: StateFlow<UserProfile?> = (uid?.let { ServiceLocator.userRepository.observeProfile(it) } ?: flowOf(null))
+        .catch { emit(null) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    val counts: StateFlow<Pair<Int, Int>> = (
+        uid?.let { id ->
+            combine(items.observePostedBy(id), claims.observeMyClaims(id)) { posts, mine -> posts.size to mine.size }
+        } ?: flowOf(0 to 0)
+        )
+        .catch { emit(0 to 0) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0 to 0)
+
+    fun logOut() = ServiceLocator.authRepository.logOut()
 
     val selectedTab: StateFlow<ActivityTab> = handle.getStateFlow(KEY_TAB, ActivityTab.POSTS)
 

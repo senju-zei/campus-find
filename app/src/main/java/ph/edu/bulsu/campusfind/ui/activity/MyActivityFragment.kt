@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayout
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentMyActivityBinding
 import ph.edu.bulsu.campusfind.model.ItemType
+import ph.edu.bulsu.campusfind.model.Role
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
@@ -37,6 +38,31 @@ class MyActivityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUpTabs()
         val nav = findNavController()
+        binding.logOutButton.setOnClickListener {
+            viewModel.logOut()
+            // Clears the back stack, so Back cannot return to signed-in screens.
+            nav.navigate(R.id.action_global_welcome)
+        }
+        collectWhenStarted(viewModel.profile) { profile ->
+            if (profile == null) return@collectWhenStarted
+            binding.name.text = profile.name
+            binding.email.text = profile.email
+            binding.initials.text = profile.name.split(" ").filter { it.isNotBlank() }.take(2)
+                .joinToString("") { it.first().uppercase() }
+            binding.role.setText(
+                when (profile.role) {
+                    Role.STUDENT -> R.string.role_student
+                    Role.CLERK -> R.string.role_clerk
+                    Role.FACULTY -> R.string.role_faculty
+                },
+            )
+        }
+        collectWhenStarted(viewModel.counts) { (posts, claims) ->
+            binding.counts.text = listOf(
+                resources.getQuantityString(R.plurals.count_posts, posts, posts),
+                resources.getQuantityString(R.plurals.count_claims, claims, claims),
+            ).joinToString(" · ")
+        }
         val postsAdapter = ItemAdapter { item ->
             nav.navigate(R.id.action_my_activity_to_detail, bundleOf(NavArgs.ITEM_ID to item.id))
         }

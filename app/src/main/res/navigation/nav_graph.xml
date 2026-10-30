@@ -141,7 +141,7 @@
     <fragment
         android:id="@+id/myActivityFragment"
         android:name="ph.edu.bulsu.campusfind.ui.activity.MyActivityFragment"
-        android:label="@string/title_my_activity"
+        android:label="@string/title_profile"
         tools:layout="@layout/fragment_my_activity">
         <action
             android:id="@+id/action_my_activity_to_detail"

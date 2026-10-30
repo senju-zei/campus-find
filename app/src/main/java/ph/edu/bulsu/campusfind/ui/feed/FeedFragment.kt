@@ -116,12 +116,6 @@ class FeedFragment : Fragment() {
                         findNavController().navigate(R.id.action_feed_to_staff)
                         true
                     }
-                    R.id.action_log_out -> {
-                        ServiceLocator.authRepository.logOut()
-                        // Clears the back stack, so Back cannot return to Feed.
-                        findNavController().navigate(R.id.action_global_welcome)
-                        true
-                    }
                     else -> false
                 }
             },

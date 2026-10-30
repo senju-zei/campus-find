@@ -98,7 +98,9 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
             DetailState.Shown(
                 item = item,
                 myClaim = claim,
-                canClaim = claimAllowed && StatusTransitions.canClaim(item.status, item.type, isPoster),
+                // Owner decision: clerks and faculty never claim (the rules refuse it too).
+                canClaim = role == Role.STUDENT && claimAllowed &&
+                    StatusTransitions.canClaim(item.status, item.type, isPoster),
                 canClose = StatusTransitions.canTransition(
                     item.status, ItemStatus.CLOSED, item.type, Role.STUDENT, isPoster,
                 ),

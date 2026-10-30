@@ -59,8 +59,11 @@ class ReviewClaimFragment : Fragment() {
             binding.claimText.text = claim?.secretDetails ?: none
             binding.whenWhere.text = claim?.whenWhere?.takeIf { it.isNotBlank() } ?: none
             binding.contact.text = claim?.contactNote?.takeIf { it.isNotBlank() } ?: none
-            // A claim already reviewed (here or on another phone) cannot be reviewed again.
-            binding.actions.visibleIf(claim?.status == ClaimStatus.PENDING)
+            // A claim already reviewed (here or on another phone) cannot be reviewed again, and
+            // staff never review an item they claimed themselves (the rules refuse it too).
+            val ownClaim = state.allClaims.any { it.claimant == viewModel.reviewerUid && it.status == ClaimStatus.PENDING }
+            binding.actions.visibleIf(claim?.status == ClaimStatus.PENDING && !ownClaim)
+            binding.ownClaimNote.visibleIf(ownClaim)
         }
         collectWhenStarted(viewModel.busy) { busy ->
             binding.approveButton.isEnabled = !busy

@@ -198,6 +198,33 @@
     <string name="hint_brand">Optional. For example, Casio fx-991ES.</string>
     <string name="label_see_at_office">Not sure it is yours? Ask to see it at the CS Office.</string>
 
+    <!-- Profile -->
+    <string name="title_profile">Profile</string>
+    <string name="cd_profile">Profile</string>
+    <string name="role_student">Student</string>
+    <string name="role_clerk">Clerk</string>
+    <string name="role_faculty">Faculty</string>
+    <plurals name="count_posts">
+        <item quantity="one">%d post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <plurals name="count_claims">
+        <item quantity="one">%d claim</item>
+        <item quantity="other">%d claims</item>
+    </plurals>
+
+    <!-- Turn-in notice -->
+    <string name="turn_in_notice">Please bring the item to the CS Office so the owner can claim it there.</string>
+    <string name="label_left_elsewhere">I left it somewhere else</string>
+    <string name="field_held_at">Where is it now?</string>
+    <string name="hint_held_at">For example, Library front desk or Guard house at Gate 1.</string>
+    <string name="error_held_at">Enter where it is, up to 100 characters.</string>
+    <string name="field_now_at">Where it is now</string>
+    <string name="label_now_at">Now at: %1$s</string>
+
+    <!-- Staff -->
+    <string name="staff_own_claim">You claimed this item. Another staff member must review it.</string>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="item_colors">
         <item>Black</item>

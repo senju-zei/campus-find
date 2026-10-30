@@ -31,6 +31,7 @@ object Constants {
     const val HIDDEN_DETAIL_MAX = 300
     const val BOOK_AUTHORS_MAX = 200
     const val BRAND_MAX = 60
+    const val HELD_AT_MAX = 100
     const val CLAIM_DETAILS_MIN = 10
     const val CLAIM_DETAILS_MAX = 500
     const val CLAIM_OPTIONAL_MAX = 200

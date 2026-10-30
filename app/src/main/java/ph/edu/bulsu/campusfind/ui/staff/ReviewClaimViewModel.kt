@@ -42,6 +42,7 @@ class ReviewClaimViewModel(handle: SavedStateHandle) : ViewModel() {
     private val items = ServiceLocator.itemRepository
     private val claims = ServiceLocator.claimRepository
     private val reviewer = ServiceLocator.authRepository.currentUser?.uid
+    val reviewerUid: String? get() = reviewer
     private val itemId: String = checkNotNull(handle[NavArgs.ITEM_ID]) { "itemId is required" }
     private val claimant: String = checkNotNull(handle[NavArgs.CLAIMANT]) { "claimant is required" }
 

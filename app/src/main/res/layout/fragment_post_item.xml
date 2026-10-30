@@ -259,6 +259,51 @@
                 android:textAppearance="@style/TextAppearance.CampusFind.Large" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- FOUND only: where the item should go, or where it is now. -->
+        <LinearLayout
+            android:id="@+id/turnInSection"
+            style="@style/Widget.CampusFind.Row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:foreground="@null"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/turn_in_notice"
+                android:textAppearance="@style/TextAppearance.CampusFind.Body" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/leftElsewhere"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:minHeight="@dimen/touch_target"
+                android:text="@string/label_left_elsewhere"
+                android:textAppearance="@style/TextAppearance.CampusFind.Body" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/heldAtLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/field_held_at"
+                android:visibility="gone"
+                app:counterEnabled="true"
+                app:counterMaxLength="100"
+                app:helperText="@string/hint_held_at"
+                app:helperTextEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/heldAtInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences"
+                    android:textAppearance="@style/TextAppearance.CampusFind.Large" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
         <!-- FOUND only. Readable by the poster and staff, never by other students. -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/hiddenLayout"

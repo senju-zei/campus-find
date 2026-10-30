@@ -94,6 +94,22 @@
             style="@style/Widget.CampusFind.FieldValue" />
 
         <LinearLayout
+            android:id="@+id/heldAtRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Widget.CampusFind.FieldLabel"
+                android:text="@string/field_now_at" />
+
+            <TextView
+                android:id="@+id/heldAt"
+                style="@style/Widget.CampusFind.FieldValue" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/colorRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

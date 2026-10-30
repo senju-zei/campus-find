@@ -60,7 +60,7 @@ class PostItemFragment : Fragment() {
         binding.locationInput.doAfterTextChanged { binding.locationLayout.error = null }
         clearErrorOnEdit(
             binding.titleLayout, binding.roomLayout, binding.descriptionLayout,
-            binding.hiddenLayout, binding.isbnLayout, binding.authorsLayout, binding.brandLayout,
+            binding.hiddenLayout, binding.isbnLayout, binding.authorsLayout, binding.brandLayout, binding.heldAtLayout,
         )
         binding.isbnInput.doAfterTextChanged { viewModel.onIsbnChanged(it?.toString().orEmpty()) }
         binding.isbnInput.setOnEditorActionListener { _, actionId, _ ->
@@ -74,6 +74,7 @@ class PostItemFragment : Fragment() {
         binding.lookUpButton.setOnClickListener { lookUp() }
         binding.postButton.setOnClickListener { submit() }
         setUpColors()
+        binding.leftElsewhere.setOnCheckedChangeListener { _, _ -> updateSections() }
         updateSections()
 
         collectWhenStarted(viewModel.state) { state ->
@@ -113,7 +114,10 @@ class PostItemFragment : Fragment() {
 
     /** Hidden detail for FOUND only; book fields for the Book category only. */
     private fun updateSections() {
-        binding.hiddenLayout.visibleIf(selectedType() == ItemType.FOUND)
+        val found = selectedType() == ItemType.FOUND
+        binding.hiddenLayout.visibleIf(found)
+        binding.turnInSection.visibleIf(found)
+        binding.heldAtLayout.visibleIf(found && binding.leftElsewhere.isChecked)
         val isBook = storedValue(binding.categoryLayout, R.array.categories, Constants.CATEGORIES) ==
             Constants.CATEGORY_BOOK
         binding.bookSection.visibleIf(isBook)
@@ -160,6 +164,15 @@ class PostItemFragment : Fragment() {
             binding.authorsLayout.check(
                 if (TextRules.fitsMax(binding.authorsLayout.text(), Constants.BOOK_AUTHORS_MAX)) null else R.string.error_optional_long,
             ),
+            binding.heldAtLayout.check(
+                if (!heldAtNeeded(type) || binding.heldAtLayout.text().isNotBlank() &&
+                    TextRules.fitsMax(binding.heldAtLayout.text(), Constants.HELD_AT_MAX)
+                ) {
+                    null
+                } else {
+                    R.string.error_held_at
+                },
+            ),
             binding.brandLayout.check(
                 if (TextRules.fitsMax(binding.brandLayout.text(), Constants.BRAND_MAX)) null else R.string.error_room_length,
             ),
@@ -180,9 +193,12 @@ class PostItemFragment : Fragment() {
                 coverUrl = null, // The view model adds the looked-up cover.
                 color = viewModel.color,
                 brand = binding.brandLayout.text(),
+                heldAt = if (heldAtNeeded(type)) binding.heldAtLayout.text() else null,
             ),
         )
     }
+
+    private fun heldAtNeeded(type: ItemType) = type == ItemType.FOUND && binding.leftElsewhere.isChecked
 
     /** Optional color chips; the chosen color tints the item's category icon everywhere. */
     private fun setUpColors() {

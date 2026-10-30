@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.ItemRowBinding
 import ph.edu.bulsu.campusfind.model.Item
+import ph.edu.bulsu.campusfind.model.ItemStatus
 
 /** Bordered item rows: picture, title, "category · location · time", status chip. */
 class ItemAdapter(
@@ -27,6 +28,8 @@ class ItemAdapter(
                 ItemUi.categoryLabel(context, item.category),
                 ItemUi.locationLabel(context, item.location),
                 item.createdAt.takeIf { it > 0 }?.let { ItemUi.relativeTime(context, it) },
+                item.heldAt?.takeIf { item.status == ItemStatus.OPEN }
+                    ?.let { context.getString(R.string.label_now_at, it) },
             ).joinToString(" · ")
             ItemUi.bindStatus(binding.status, item.status)
             ItemUi.loadPicture(binding.picture, item, R.dimen.badge_size_row)
