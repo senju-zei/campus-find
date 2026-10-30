@@ -17,11 +17,22 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.model.Claim
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import ph.edu.bulsu.campusfind.R
+import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
+import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.model.UserProfile
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
 
 enum class ActivityTab { POSTS, CLAIMS }
+
+/** A claim this staff member reviewed, with its item (null if the item was deleted). */
+data class HistoryRow(val claim: Claim, val item: Item?) {
+    val key: String get() = "${claim.itemId}/${claim.claimant}"
+}
 
 /** A claim with the item it is for (null if the item was removed). */
 data class MyClaimRow(val claim: Claim, val item: Item?)
@@ -53,6 +64,46 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), 0 to 0)
 
     fun logOut() = ServiceLocator.authRepository.logOut()
+
+    val isStaff: StateFlow<Boolean> = profile.map { it?.role?.isStaff == true }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
+
+    /** Staff only (null for students): claims I approved or rejected, newest first. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val history: StateFlow<List<HistoryRow>?> = isStaff.flatMapLatest { staff ->
+        if (!staff || uid == null) {
+            flowOf(null)
+        } else {
+            claims.observeAllClaims()
+                .map { all -> all.filter { it.reviewedBy == uid && it.status != ClaimStatus.PENDING } }
+                .flatMapLatest { mine ->
+                    if (mine.isEmpty()) {
+                        flowOf(emptyList())
+                    } else {
+                        combine(mine.map { c -> items.observeItem(c.itemId).catch { emit(null) }.map { HistoryRow(c, it) } }) {
+                            it.toList().sortedByDescending { row -> row.item?.updatedAt ?: row.claim.createdAt }
+                        }
+                    }
+                }
+                .catch { emit(emptyList()) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    private val _messages = Channel<UiMessage>(Channel.BUFFERED)
+    val messages: Flow<UiMessage> = _messages.receiveAsFlow()
+
+    /** Staff. Deletes the chosen History records for everyone. */
+    fun deleteHistory(keys: List<String>) {
+        val pairs = keys.mapNotNull { key -> key.split("/").takeIf { it.size == 2 }?.let { it[0] to it[1] } }
+        viewModelScope.launch {
+            try {
+                claims.deleteClaims(pairs)
+                _messages.send(UiMessage(R.plurals.msg_deleted_count, count = pairs.size))
+            } catch (e: Exception) {
+                _messages.send(UiMessage(ErrorMessages.forException(e)))
+            }
+        }
+    }
 
     val selectedTab: StateFlow<ActivityTab> = handle.getStateFlow(KEY_TAB, ActivityTab.POSTS)
 

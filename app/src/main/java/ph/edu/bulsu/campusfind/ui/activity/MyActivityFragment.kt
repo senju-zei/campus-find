@@ -7,7 +7,15 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ph.edu.bulsu.campusfind.domain.Settled
+import ph.edu.bulsu.campusfind.model.ClaimStatus
+import ph.edu.bulsu.campusfind.ui.common.Selection
+import ph.edu.bulsu.campusfind.ui.common.SelectionBar
+import ph.edu.bulsu.campusfind.ui.common.UiMessage
+import ph.edu.bulsu.campusfind.ui.common.showMessage
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import ph.edu.bulsu.campusfind.R
@@ -58,6 +66,7 @@ class MyActivityFragment : Fragment() {
             )
         }
         collectWhenStarted(viewModel.counts) { (posts, claims) ->
+            if (viewModel.isStaff.value) return@collectWhenStarted
             binding.counts.text = listOf(
                 resources.getQuantityString(R.plurals.count_posts, posts, posts),
                 resources.getQuantityString(R.plurals.count_claims, claims, claims),
@@ -72,7 +81,11 @@ class MyActivityFragment : Fragment() {
         )
         binding.list.layoutManager = LinearLayoutManager(requireContext())
 
+        setUpStaffHistory(nav)
+
         collectWhenStarted(viewModel.state) { state ->
+            // Staff see History instead of Posts and Claims.
+            if (viewModel.isStaff.value) return@collectWhenStarted
             binding.progress.visibleIf(state is ActivityState.Loading)
             binding.error.visibleIf(state is ActivityState.Failed)
             when (state) {
@@ -102,6 +115,61 @@ class MyActivityFragment : Fragment() {
         showResultMessages()
     }
 
+    private var selectionBar: SelectionBar? = null
+
+    /** Staff Profile: History of reviewed claims with long-press delete, instead of the tabs. */
+    private fun setUpStaffHistory(nav: NavController) {
+        lateinit var adapter: HistoryAdapter
+        val selection = Selection {
+            adapter.notifyDataSetChanged()
+            selectionBar?.update()
+        }
+        adapter = HistoryAdapter(
+            selection = selection,
+            onOpen = { row ->
+                if (row.item != null) nav.navigate(R.id.action_my_activity_to_detail, bundleOf(NavArgs.ITEM_ID to row.claim.itemId))
+            },
+            onSelect = { row ->
+                if (row.key in selection || Settled.recordDeletable(row.claim, row.item, System.currentTimeMillis())) {
+                    selection.toggle(row.key)
+                } else {
+                    showMessage(UiMessage(R.string.msg_cannot_delete_yet))
+                }
+            },
+        )
+        selectionBar = SelectionBar(this, selection) {
+            val keys = selection.snapshot()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_records_body, keys.size, keys.size))
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_delete) { _, _ ->
+                    viewModel.deleteHistory(keys)
+                    selectionBar?.finish()
+                }
+                .show()
+        }
+        collectWhenStarted(viewModel.history) { rows ->
+            if (rows == null) return@collectWhenStarted
+            binding.tabs.visibleIf(false)
+            binding.historyHint.visibleIf(true)
+            binding.progress.visibleIf(false)
+            binding.error.visibleIf(false)
+            if (binding.list.adapter !== adapter) binding.list.adapter = adapter
+            adapter.submitList(rows)
+            binding.empty.visibleIf(rows.isEmpty())
+            binding.emptyText.setText(R.string.empty_history)
+            binding.emptyAction.visibleIf(false)
+            val approved = rows.count { it.claim.status == ClaimStatus.APPROVED }
+            val rejected = rows.size - approved
+            binding.counts.text = listOf(
+                resources.getQuantityString(R.plurals.count_approved, approved, approved),
+                resources.getQuantityString(R.plurals.count_rejected, rejected, rejected),
+            ).joinToString(" · ")
+        }
+        collectWhenStarted(viewModel.messages) { showMessage(it) }
+    }
+
     private fun showEmpty(empty: Boolean, text: Int, action: Int, onAction: () -> Unit) {
         binding.empty.visibleIf(empty)
         binding.emptyText.setText(text)
@@ -122,6 +190,8 @@ class MyActivityFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        selectionBar?.finish()
+        selectionBar = null
         super.onDestroyView()
         _binding = null
     }

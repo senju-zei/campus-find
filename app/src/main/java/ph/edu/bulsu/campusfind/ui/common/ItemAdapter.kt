@@ -12,6 +12,9 @@ import ph.edu.bulsu.campusfind.model.ItemStatus
 
 /** Bordered item rows: picture, title, "category · location · time", status chip. */
 class ItemAdapter(
+    /** Staff Settled tab only: long-press selection. */
+    private val selection: Selection? = null,
+    private val onSelect: ((Item) -> Unit)? = null,
     private val onClick: (Item) -> Unit,
 ) : ListAdapter<Item, ItemAdapter.Holder>(Diff) {
 
@@ -33,7 +36,15 @@ class ItemAdapter(
             ).joinToString(" · ")
             ItemUi.bindStatus(binding.status, item.status)
             ItemUi.loadPicture(binding.picture, item, R.dimen.badge_size_row)
-            binding.root.setOnClickListener { onClick(item) }
+            val selected = selection?.contains(item.id) == true
+            binding.root.setBackgroundResource(if (selected) R.drawable.bg_row_selected else R.drawable.bg_row)
+            binding.root.setOnClickListener {
+                if (selection?.isActive == true) onSelect?.invoke(item) else onClick(item)
+            }
+            binding.root.setOnLongClickListener {
+                onSelect?.invoke(item)
+                onSelect != null
+            }
         }
     }
 

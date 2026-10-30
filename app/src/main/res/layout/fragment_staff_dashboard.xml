@@ -22,17 +22,6 @@
         android:text="@string/hint_tap_review"
         android:textAppearance="@style/TextAppearance.CampusFind.Small" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/deleteOldButton"
-        style="@style/Widget.CampusFind.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/screen_margin"
-        android:layout_marginTop="@dimen/space_2"
-        android:layout_marginEnd="@dimen/screen_margin"
-        android:text="@string/action_delete_old"
-        android:textColor="@color/chip_error_text"
-        android:visibility="gone" />
 
     <FrameLayout
         android:layout_width="match_parent"

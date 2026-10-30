@@ -66,6 +66,11 @@
         <item name="textAppearanceLabelMedium">@style/TextAppearance.CampusFind.Small.Medium</item>
         <item name="textAppearanceLabelSmall">@style/TextAppearance.CampusFind.Small.Medium</item>
 
+        <!-- Long-press selection bar replaces the top bar, in the same flat colors. -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@color/accent_tint</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_arrow_back</item>
+
         <item name="materialButtonStyle">@style/Widget.CampusFind.Button</item>
         <item name="materialButtonOutlinedStyle">@style/Widget.CampusFind.Button.Outlined</item>
         <item name="borderlessButtonStyle">@style/Widget.CampusFind.Button.Text</item>

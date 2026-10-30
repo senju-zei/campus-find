@@ -74,6 +74,13 @@ class ClaimRepository(private val root: DatabaseReference) {
             }.sortedBy { it.createdAt }
         }
 
+    /** Staff. Deletes claim records (itemId to claimant) for everyone, in one update. */
+    suspend fun deleteClaims(keys: List<Pair<String, String>>) {
+        if (keys.isEmpty()) return
+        val updates = keys.associate { (itemId, claimant) -> "${DbPaths.CLAIMS}/$itemId/$claimant" to null }
+        root.updateChildren(updates).awaitWrite()
+    }
+
     /** Staff. All claims on one item, oldest first. */
     fun observeClaimsForItem(itemId: String): Flow<List<Claim>> =
         claims.child(itemId).valueEvents().map { snapshot ->

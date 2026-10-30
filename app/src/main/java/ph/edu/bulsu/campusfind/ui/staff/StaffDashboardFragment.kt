@@ -13,7 +13,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentStaffDashboardBinding
+import ph.edu.bulsu.campusfind.domain.Settled
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
+import ph.edu.bulsu.campusfind.ui.common.Selection
+import ph.edu.bulsu.campusfind.ui.common.SelectionBar
+import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
 import ph.edu.bulsu.campusfind.ui.common.showMessage
@@ -49,6 +53,35 @@ class StaffDashboardFragment : Fragment() {
         val turnInAdapter = ItemAdapter { item ->
             nav.navigate(R.id.action_staff_to_detail, bundleOf(NavArgs.ITEM_ID to item.id))
         }
+        // Settled tab: tap opens, long-press selects (closed any time, returned after 30 days).
+        lateinit var settledAdapter: ItemAdapter
+        val selection = Selection {
+            settledAdapter.notifyDataSetChanged()
+            selectionBar?.update()
+        }
+        settledAdapter = ItemAdapter(
+            onClick = { item -> nav.navigate(R.id.action_staff_to_detail, bundleOf(NavArgs.ITEM_ID to item.id)) },
+            selection = selection,
+            onSelect = { item ->
+                if (item.id in selection || Settled.deletable(item, System.currentTimeMillis())) {
+                    selection.toggle(item.id)
+                } else {
+                    showMessage(UiMessage(R.string.msg_cannot_delete_yet))
+                }
+            },
+        )
+        selectionBar = SelectionBar(this, selection) {
+            val ids = selection.snapshot()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_delete_title)
+                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_items_body, ids.size, ids.size))
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_delete) { _, _ ->
+                    viewModel.deleteItems(ids)
+                    selectionBar?.finish()
+                }
+                .show()
+        }
         binding.list.layoutManager = LinearLayoutManager(requireContext())
 
         collectWhenStarted(viewModel.state) { state ->
@@ -56,7 +89,7 @@ class StaffDashboardFragment : Fragment() {
             binding.error.visibleIf(state is StaffState.Failed)
             binding.hint.visibleIf(state is StaffState.Claims && state.rows.isNotEmpty() || state is StaffState.Settled)
             binding.hint.setText(if (state is StaffState.Settled) R.string.hint_settled else R.string.hint_tap_review)
-            binding.deleteOldButton.visibleIf(state is StaffState.Settled && state.deletable.isNotEmpty())
+            if (state !is StaffState.Settled) selectionBar?.finish()
             when (state) {
                 StaffState.Loading -> binding.empty.visibleIf(false)
                 is StaffState.Failed -> {
@@ -71,8 +104,8 @@ class StaffDashboardFragment : Fragment() {
                     binding.emptyText.setText(R.string.empty_staff_claims)
                 }
                 is StaffState.Settled -> {
-                    if (binding.list.adapter !== turnInAdapter) binding.list.adapter = turnInAdapter
-                    turnInAdapter.submitList(state.items)
+                    if (binding.list.adapter !== settledAdapter) binding.list.adapter = settledAdapter
+                    settledAdapter.submitList(state.items)
                     binding.empty.visibleIf(state.items.isEmpty())
                     binding.emptyText.setText(R.string.empty_staff_settled)
                 }
@@ -84,20 +117,13 @@ class StaffDashboardFragment : Fragment() {
                 }
             }
         }
-        binding.deleteOldButton.setOnClickListener {
-            val count = (viewModel.state.value as? StaffState.Settled)?.deletable?.size ?: 0
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.dialog_delete_title)
-                .setMessage(resources.getQuantityString(R.plurals.dialog_delete_old_body, count, count))
-                .setNegativeButton(R.string.action_cancel, null)
-                .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.deleteOld() }
-                .show()
-        }
         collectWhenStarted(viewModel.messages) { showMessage(it) }
 
         // Review claim hands back "Claim approved" or "Claim rejected" here.
         showResultMessages()
     }
+
+    private var selectionBar: SelectionBar? = null
 
     private fun setUpTabs() {
         val tabs = binding.tabs
@@ -113,6 +139,8 @@ class StaffDashboardFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        selectionBar?.finish()
+        selectionBar = null
         super.onDestroyView()
         _binding = null
     }

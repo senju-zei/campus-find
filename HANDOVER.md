@@ -73,6 +73,14 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   permanently" to staff once deletable. Delete = items/{id}, itemSecrets/{id}, claims/{id} set to null in
   one update (rules allow staff deletes only). Release step in build.yml retries the delete 3 times.
   Rules published (8212 chars). Students' myClaims pointers to deleted items stay but show nothing.
+- **Batch 2.5: DONE (owner request).** Staff Profile shows **History** (claims they approved or rejected,
+  newest first, with pickup code or reason) instead of Posts/Claims; counts "N approved · M rejected".
+  Long-press starts email-style selection (`ui/common/Selection.kt`: `Selection` + `SelectionBar` action
+  mode "N selected" + trash icon) in History and in the staff Settled tab; delete asks for confirmation
+  and removes the data for everyone. Safety rule (`Settled.deletable` / `recordDeletable`): CLOSED items
+  any time, RETURNED items and their approved records 30 days after settling, rejected records once the
+  item settled. The old "Delete items settled over 30 days ago" button was replaced by multi-select.
+  No rules change (staff could already delete claims and items).
 - **Batch 3: Search and filter + match suggestions + swipe-down refresh.** Feed search box and
   chips (category, color; text matches title, brand, description). After posting a Lost item, show
   "Might be yours": Found items with same category (and color/location) from the last 14 days.

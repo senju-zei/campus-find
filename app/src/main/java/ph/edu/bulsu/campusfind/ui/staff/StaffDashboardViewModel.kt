@@ -25,7 +25,6 @@ import ph.edu.bulsu.campusfind.model.ItemType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import ph.edu.bulsu.campusfind.domain.Settled as SettledRules
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 
@@ -38,8 +37,7 @@ sealed interface StaffState {
     data object Loading : StaffState
     data class Claims(val rows: List<StaffClaimRow>) : StaffState
     data class TurnIn(val items: List<Item>) : StaffState
-    /** [deletable] are the ids settled over 30 days ago. */
-    data class Settled(val items: List<Item>, val deletable: List<String>) : StaffState
+    data class Settled(val items: List<Item>) : StaffState
     data class Failed(@param:StringRes val message: Int) : StaffState
 }
 
@@ -72,10 +70,7 @@ class StaffDashboardViewModel(private val handle: SavedStateHandle) : ViewModel(
                 tab == StaffTab.CLAIMS -> pendingClaimRows().map { StaffState.Claims(it) }
                 tab == StaffTab.TURN_IN -> items.observeByStatus(ItemStatus.OPEN)
                     .map { list -> StaffState.TurnIn(list.filter { it.type == ItemType.FOUND }) }
-                else -> items.observeSettled().map { list ->
-                    val now = System.currentTimeMillis()
-                    StaffState.Settled(list, list.filter { SettledRules.deletable(it, now) }.map { it.id })
-                }
+                else -> items.observeSettled().map { StaffState.Settled(it) }
             }
             source
                 .onStart { emit(StaffState.Loading) }
@@ -106,9 +101,8 @@ class StaffDashboardViewModel(private val handle: SavedStateHandle) : ViewModel(
     private val _messages = Channel<UiMessage>(Channel.BUFFERED)
     val messages: Flow<UiMessage> = _messages.receiveAsFlow()
 
-    /** Deletes every item settled over 30 days ago, in one update. */
-    fun deleteOld() {
-        val ids = (state.value as? StaffState.Settled)?.deletable ?: return
+    /** Deletes the selected settled items, their hidden details and claims, in one update. */
+    fun deleteItems(ids: List<String>) {
         viewModelScope.launch {
             try {
                 items.deletePermanently(ids)

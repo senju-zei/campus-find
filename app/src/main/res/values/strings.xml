@@ -228,16 +228,38 @@
     <!-- Settled (trash) -->
     <string name="tab_staff_settled">Settled</string>
     <string name="empty_staff_settled">No settled items.</string>
-    <string name="hint_settled">Returned and closed items leave Feed after 3 days. You can delete them 30 days after they settle.</string>
+    <string name="hint_settled">Settled items leave Feed after 3 days. Long-press to select items to delete: closed reports any time, returned items 30 days after they settle.</string>
+    <string name="hint_history">Claims you approved or rejected. Long-press to select records to delete once the item has settled.</string>
+    <string name="empty_history">You have not reviewed any claims yet.</string>
+    <string name="msg_cannot_delete_yet">This can be deleted once the item has settled (returned items after 30 days).</string>
+    <string name="cd_delete_selected">Delete selected</string>
+    <string name="label_history_code">Approved for %1$s · pickup code %2$s</string>
+    <string name="label_history_approved">Approved for %1$s</string>
+    <string name="label_history_reason">Rejected %1$s · %2$s</string>
+    <plurals name="selection_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+    <plurals name="count_approved">
+        <item quantity="one">%d approved</item>
+        <item quantity="other">%d approved</item>
+    </plurals>
+    <plurals name="count_rejected">
+        <item quantity="one">%d rejected</item>
+        <item quantity="other">%d rejected</item>
+    </plurals>
+    <plurals name="dialog_delete_records_body">
+        <item quantity="one">Delete %d record for everyone? The student will no longer see it. This cannot be undone.</item>
+        <item quantity="other">Delete %d records for everyone? Students will no longer see them. This cannot be undone.</item>
+    </plurals>
+    <plurals name="dialog_delete_items_body">
+        <item quantity="one">Delete %d item for everyone, with its hidden detail and claims? This cannot be undone.</item>
+        <item quantity="other">Delete %d items for everyone, with their hidden details and claims? This cannot be undone.</item>
+    </plurals>
     <string name="action_delete_permanently">Delete permanently</string>
-    <string name="action_delete_old">Delete items settled over 30 days ago</string>
     <string name="action_delete">Delete</string>
     <string name="dialog_delete_title">Delete permanently?</string>
     <string name="dialog_delete_body">This removes the item, its hidden detail and its claims for everyone. It cannot be undone.</string>
-    <plurals name="dialog_delete_old_body">
-        <item quantity="one">This removes %d item for everyone, with its hidden detail and claims. It cannot be undone.</item>
-        <item quantity="other">This removes %d items for everyone, with their hidden details and claims. It cannot be undone.</item>
-    </plurals>
     <plurals name="msg_deleted_count">
         <item quantity="one">%d item deleted.</item>
         <item quantity="other">%d items deleted.</item>

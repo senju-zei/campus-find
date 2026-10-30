@@ -79,6 +79,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Staff only, instead of the tabs. -->
+    <TextView
+        android:id="@+id/historyHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/screen_margin"
+        android:paddingTop="@dimen/space_3"
+        android:paddingEnd="@dimen/screen_margin"
+        android:text="@string/hint_history"
+        android:textAppearance="@style/TextAppearance.CampusFind.Small"
+        android:visibility="gone" />
+
     <View style="@style/Widget.CampusFind.Divider" />
 
     <FrameLayout
