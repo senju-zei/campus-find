@@ -40,9 +40,13 @@ class MyClaimAdapter(
                     ClaimStatus.REJECTED -> R.string.claim_rejected_note
                 },
             )
-            val reason = claim.rejectReason?.takeIf { claim.status == ClaimStatus.REJECTED }
-            binding.reason.visibleIf(reason != null)
-            binding.reason.text = reason?.let { context.getString(R.string.label_reject_reason, it) }
+            val extra = when (claim.status) {
+                ClaimStatus.REJECTED -> claim.rejectReason?.let { context.getString(R.string.label_reject_reason, it) }
+                ClaimStatus.APPROVED -> claim.pickupCode?.let { context.getString(R.string.label_pickup_code, it) }
+                ClaimStatus.PENDING -> null
+            }
+            binding.reason.visibleIf(extra != null)
+            binding.reason.text = extra
 
             // "Claim again" only when the item can be claimed again (back to OPEN or TURNED_IN).
             val canClaimAgain = claim.status == ClaimStatus.REJECTED && item != null &&

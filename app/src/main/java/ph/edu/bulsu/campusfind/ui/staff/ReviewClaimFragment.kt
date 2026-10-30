@@ -36,7 +36,7 @@ class ReviewClaimFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.reasonInput.doAfterTextChanged { binding.reasonLayout.error = null }
-        binding.approveButton.setOnClickListener { viewModel.approve() }
+        binding.approveButton.setOnClickListener { viewModel.approve(getString(R.string.reason_other_claim_approved)) }
         binding.rejectButton.setOnClickListener { reject() }
 
         collectWhenStarted(viewModel.state) { state ->
@@ -50,8 +50,10 @@ class ReviewClaimFragment : Fragment() {
                 ItemUi.bindStatus(binding.itemStatus, item.status)
             }
             binding.hiddenDetail.text = state.hiddenDetail ?: none
+            val pendingCount = state.allClaims.count { it.status == ClaimStatus.PENDING }
             binding.claimant.text = claim?.let {
-                getString(R.string.label_claimed_by, it.claimantName, ItemUi.relativeTime(context, it.createdAt))
+                val who = getString(R.string.label_claimed_by, it.claimantName, ItemUi.relativeTime(context, it.createdAt))
+                if (pendingCount > 1) who + "\n" + getString(R.string.label_other_claims, pendingCount) else who
             }
             claim?.let { ItemUi.bindClaimStatus(binding.claimStatus, it.status) }
             binding.claimText.text = claim?.secretDetails ?: none

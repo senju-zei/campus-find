@@ -117,6 +117,8 @@ data class Claim(
     val status: ClaimStatus,
     val rejectReason: String?,
     val reviewedBy: String?,
+    /** Private 6-digit code set on approval; shown only to the claimant and staff. */
+    val pickupCode: String?,
     val createdAt: Long,
 ) {
     companion object {
@@ -132,6 +134,7 @@ data class Claim(
                 status = enumOrNull<ClaimStatus>(str("status")) ?: return null,
                 rejectReason = str("rejectReason"),
                 reviewedBy = str("reviewedBy"),
+                pickupCode = str("pickupCode"),
                 createdAt = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L,
             )
         }

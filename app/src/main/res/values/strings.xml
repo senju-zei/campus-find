@@ -187,6 +187,10 @@
     <string name="hint_tap_review">Tap a claim to review it.</string>
     <string name="error_staff_only">Staff access only.</string>
     <string name="dialog_change_status_title">Change status</string>
+    <string name="reason_other_claim_approved">Another claim for this item was approved.</string>
+    <string name="label_pickup_code">Your pickup code: %1$s</string>
+    <string name="label_staff_pickup">Approved for %1$s · pickup code %2$s</string>
+    <string name="label_other_claims">%1$d claims on this item</string>
 
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="locations">

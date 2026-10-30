@@ -25,9 +25,11 @@ object StatusTransitions {
             ItemStatus.TURNED_IN ->
                 role.isStaff && type == ItemType.FOUND &&
                     (from == ItemStatus.OPEN || from == ItemStatus.CLAIM_PENDING)
+            // Owner decision: several students may claim the same item, so a claim is also
+            // allowed while other claims are pending.
             ItemStatus.CLAIM_PENDING ->
                 !isPoster && type == ItemType.FOUND &&
-                    (from == ItemStatus.OPEN || from == ItemStatus.TURNED_IN)
+                    (from == ItemStatus.OPEN || from == ItemStatus.TURNED_IN || from == ItemStatus.CLAIM_PENDING)
             ItemStatus.RETURNED ->
                 role.isStaff && from == ItemStatus.CLAIM_PENDING
             // A reject of a claim on an item that was never turned in.

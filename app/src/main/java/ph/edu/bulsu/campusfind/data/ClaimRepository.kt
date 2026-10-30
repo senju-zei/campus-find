@@ -74,22 +74,52 @@ class ClaimRepository(private val root: DatabaseReference) {
             }.sortedBy { it.createdAt }
         }
 
-    /** Staff. Claim APPROVED and item RETURNED in one update. */
-    suspend fun approve(claim: Claim, reviewerUid: String) {
+    /** Staff. All claims on one item, oldest first. */
+    fun observeClaimsForItem(itemId: String): Flow<List<Claim>> =
+        claims.child(itemId).valueEvents().map { snapshot ->
+            snapshot.children.mapNotNull { Claim.from(itemId, it) }.sortedBy { it.createdAt }
+        }
+
+    /**
+     * Staff. In one update: the claim APPROVED with a private [pickupCode], every other pending
+     * claim on the item REJECTED with [otherReason], and the item RETURNED.
+     */
+    suspend fun approve(
+        claim: Claim,
+        reviewerUid: String,
+        pickupCode: String,
+        otherPending: List<Claim>,
+        otherReason: String,
+    ) {
         val claimPath = "${DbPaths.CLAIMS}/${claim.itemId}/${claim.claimant}"
         val itemPath = "${DbPaths.ITEMS}/${claim.itemId}"
-        root.updateChildren(
-            mapOf(
-                "$claimPath/status" to ClaimStatus.APPROVED.name,
-                "$claimPath/reviewedBy" to reviewerUid,
-                "$itemPath/status" to ItemStatus.RETURNED.name,
-                "$itemPath/updatedAt" to ServerValue.TIMESTAMP,
-            ),
-        ).awaitWrite()
+        val updates = mutableMapOf<String, Any>(
+            "$claimPath/status" to ClaimStatus.APPROVED.name,
+            "$claimPath/reviewedBy" to reviewerUid,
+            "$claimPath/pickupCode" to pickupCode,
+            "$itemPath/status" to ItemStatus.RETURNED.name,
+            "$itemPath/updatedAt" to ServerValue.TIMESTAMP,
+        )
+        otherPending.filter { it.claimant != claim.claimant }.forEach { other ->
+            val otherPath = "${DbPaths.CLAIMS}/${other.itemId}/${other.claimant}"
+            updates["$otherPath/status"] = ClaimStatus.REJECTED.name
+            updates["$otherPath/rejectReason"] = otherReason
+            updates["$otherPath/reviewedBy"] = reviewerUid
+        }
+        root.updateChildren(updates).awaitWrite()
     }
 
-    /** Staff. Claim REJECTED with a reason; item back to TURNED_IN if it was turned in, else OPEN. */
-    suspend fun reject(claim: Claim, reviewerUid: String, reason: String, itemTurnedInAt: Long?) {
+    /**
+     * Staff. Claim REJECTED with a reason. The item stays CLAIM_PENDING while other claims are
+     * pending; otherwise it goes back to TURNED_IN if it was turned in, else OPEN.
+     */
+    suspend fun reject(
+        claim: Claim,
+        reviewerUid: String,
+        reason: String,
+        itemTurnedInAt: Long?,
+        othersPending: Boolean,
+    ) {
         val claimPath = "${DbPaths.CLAIMS}/${claim.itemId}/${claim.claimant}"
         val itemPath = "${DbPaths.ITEMS}/${claim.itemId}"
         root.updateChildren(
@@ -97,7 +127,8 @@ class ClaimRepository(private val root: DatabaseReference) {
                 "$claimPath/status" to ClaimStatus.REJECTED.name,
                 "$claimPath/rejectReason" to reason.trim(),
                 "$claimPath/reviewedBy" to reviewerUid,
-                "$itemPath/status" to StatusTransitions.rejectTarget(itemTurnedInAt).name,
+                "$itemPath/status" to
+                    (if (othersPending) ItemStatus.CLAIM_PENDING else StatusTransitions.rejectTarget(itemTurnedInAt)).name,
                 "$itemPath/updatedAt" to ServerValue.TIMESTAMP,
             ),
         ).awaitWrite()

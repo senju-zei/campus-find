@@ -1,0 +1,61 @@
+# Campus Find – Handover
+
+Read this first in a new session, together with `Campus_Find.md` (the plan, in the owner's Downloads).
+
+## Where things are
+- Project: `C:\Users\emman\CAMPUS FIND` (Kotlin, Views, single activity, package `ph.edu.bulsu.campusfind`).
+- GitHub: `senju-zei/campus-find` (public). Pushing to `main` builds and replaces the APK at
+  https://github.com/senju-zei/campus-find/releases/download/latest/campus-find.apk
+  Git on this PC pushes as `EmmanIvan` (collaborator); commits are signed `senju-zei`.
+- Firebase: project `campus-find-86d58` (Google account zen65877@gmail.com), Auth Email/Password,
+  Realtime Database in **us-central1**. `app/google-services.json` is local only (gitignored) and is in
+  the repo secret `GOOGLE_SERVICES_JSON`.
+- Rules: `firebase/database.rules.json`. **After changing it, paste it into the Firebase console
+  (Realtime Database → Rules → Publish)**, or the real app keeps the old rules.
+- Staff: set `users/{uid}/role` to `clerk` or `faculty` in the console; the user logs out and in.
+
+## Tools on this PC
+- JDK 17 (Gradle): `C:\Users\emman\tools\jdk\jdk-17.0.20.1+1`
+- JDK 21 + Node 22 + Firebase CLI (emulators): `C:\Users\emman\tools\jdk21\...`, `C:\Users\emman\tools\node-v22.23.4-win-x64`, `C:\Users\emman\tools\npm-global\firebase.cmd`
+- Android SDK: `%LOCALAPPDATA%\Android\Sdk`, emulator AVD `campusfind_api35`.
+- Build like CI: `gradlew testDebugUnitTest lintDebug assembleDebug` (JAVA_HOME = JDK 17).
+- Emulator build: add `-PuseEmulator=true` (Auth 9099, Database 9000 on 10.0.2.2), then
+  `firebase emulators:start --only auth,database --project campus-find-86d58` (JAVA_HOME = JDK 21).
+
+## Done
+- Steps 3–6 of the plan: skeleton, theme, sign-up/login with verification + token refresh, Feed,
+  Post item (ISBN look-up, Open Library cover, DiceBear badge), Item detail, Claim, My activity,
+  Staff dashboard, Review claim (approve / reject with reason), Mark turned in, faculty Change status.
+- Welcome landing page with an animated logo (magnifying glass with an eye), at the owner's request.
+- Database reads use a one-time listener with a timeout (`readOnce`), writes use `awaitWrite`
+  (DatabaseReference.get() hung in testing).
+- Tested end to end on the Android emulator against the Firebase emulators. Not yet: step 7 tests.
+
+## Multiple claims + pickup code: DONE
+- Rules updated and **published** in the console (file and console match, 7201 chars).
+- Approve = claim APPROVED + `pickupCode` + other pending claims REJECTED + item RETURNED, one update.
+- Reject keeps the item CLAIM_PENDING while other claims are pending.
+- Claimant sees "Your pickup code" on Item detail and My activity; staff see "Approved for X · pickup code" on Item detail.
+- Verified with REST rules checks in the emulator (2 claimants + clerk). Not yet clicked through on a phone.
+
+## Owner decisions
+- Keep current library versions until after the demo.
+- **Multiple claims per item** (changes the plan): any student except the finder can claim while the
+  item is OPEN, TURNED_IN or CLAIM_PENDING. Approving one claim sets the item RETURNED and rejects every
+  other claim on it in the same update ("Another claim was approved.").
+- **Private pickup code**: on approval a random 6-digit code is stored on the approved claim
+  (`pickupCode`). Only that claimant and staff can read it (claims are already private).
+
+## Next, in this order
+1. Search and filter chips on Feed (client-side only). **Start here.**
+2. Match suggestions after posting a Lost item (same category and location, last 14 days).
+3. Polish: tab counts, badge on the staff icon, how-it-works on Welcome.
+4. Profile page (name, email, role, counts, log out; the name cannot change).
+5. Step 7: QA agent (`.claude/agents/qa-tester.md`), unit tests, rules tests in `qa/rules/`.
+Later: item photos (needs the paid Firebase plan for Storage), notifications, auto-close.
+
+## Watch out for
+- Verification emails come from `noreply@campus-find-86d58.firebaseapp.com` and may land in spam or
+  the BulSU quarantine.
+- Material 1.12 has no `colorSurfaceTint`; `elevationOverlayEnabled=false` is used instead.
+- `Task<Void>.await()` returns null on success; `awaitWrite` returns Unit to tell success from timeout.

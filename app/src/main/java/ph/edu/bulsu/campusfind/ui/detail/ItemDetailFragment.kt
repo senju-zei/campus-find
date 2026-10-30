@@ -57,6 +57,15 @@ class ItemDetailFragment : Fragment() {
                 is DetailState.Shown -> {
                     bindItem(state.item)
                     bindMyClaim(state.myClaim)
+                    // Staff checking a pickup: who it was approved for and their code.
+                    state.approvedForStaff?.let { approved ->
+                        binding.claimBox.visibleIf(true)
+                        ItemUi.bindClaimStatus(binding.claimStatusChip, approved.status)
+                        binding.claimNote.text = getString(
+                            R.string.label_staff_pickup, approved.claimantName, approved.pickupCode.orEmpty(),
+                        )
+                        binding.claimReason.visibleIf(false)
+                    }
                     binding.claimButton.visibleIf(state.canClaim)
                     binding.claimButton.setText(
                         if (state.myClaim?.status == ClaimStatus.REJECTED) R.string.action_claim_again else R.string.action_claim_item,
@@ -117,9 +126,13 @@ class ItemDetailFragment : Fragment() {
                 ClaimStatus.REJECTED -> R.string.claim_rejected_note
             },
         )
-        val reason = claim.rejectReason?.takeIf { claim.status == ClaimStatus.REJECTED }
-        binding.claimReason.visibleIf(reason != null)
-        binding.claimReason.text = reason?.let { getString(R.string.label_reject_reason, it) }
+        val extra = when (claim.status) {
+            ClaimStatus.REJECTED -> claim.rejectReason?.let { getString(R.string.label_reject_reason, it) }
+            ClaimStatus.APPROVED -> claim.pickupCode?.let { getString(R.string.label_pickup_code, it) }
+            ClaimStatus.PENDING -> null
+        }
+        binding.claimReason.visibleIf(extra != null)
+        binding.claimReason.text = extra
     }
 
     /** Faculty override: pick any of the five statuses. */

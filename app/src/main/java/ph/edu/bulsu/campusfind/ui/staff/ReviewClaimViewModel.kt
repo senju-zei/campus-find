@@ -16,13 +16,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.core.ServiceLocator
+import ph.edu.bulsu.campusfind.domain.PickupCode
 import ph.edu.bulsu.campusfind.model.Claim
+import ph.edu.bulsu.campusfind.model.ClaimStatus
 import ph.edu.bulsu.campusfind.model.Item
 import ph.edu.bulsu.campusfind.ui.common.ErrorMessages
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 
-data class ReviewState(val item: Item?, val hiddenDetail: String?, val claim: Claim?)
+data class ReviewState(
+    val item: Item?,
+    val hiddenDetail: String?,
+    val claim: Claim?,
+    /** Every claim on this item, so approving one can reject the others. */
+    val allClaims: List<Claim> = emptyList(),
+)
 
 sealed interface ReviewEvent {
     data class Done(val message: UiMessage) : ReviewEvent
@@ -40,8 +48,8 @@ class ReviewClaimViewModel(handle: SavedStateHandle) : ViewModel() {
     val state: StateFlow<ReviewState> = combine(
         items.observeItem(itemId).catch { emit(null) },
         items.observeHiddenDetail(itemId).catch { emit(null) },
-        claims.observeMyClaim(itemId, claimant).catch { emit(null) },
-    ) { item, hidden, claim -> ReviewState(item, hidden, claim) }
+        claims.observeClaimsForItem(itemId).catch { emit(emptyList()) },
+    ) { item, hidden, all -> ReviewState(item, hidden, all.firstOrNull { it.claimant == claimant }, all) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), ReviewState(null, null, null))
 
     private val _busy = MutableStateFlow(false)
@@ -50,12 +58,16 @@ class ReviewClaimViewModel(handle: SavedStateHandle) : ViewModel() {
     private val _events = Channel<ReviewEvent>(Channel.BUFFERED)
     val events: Flow<ReviewEvent> = _events.receiveAsFlow()
 
-    /** Claim APPROVED and item RETURNED in one update. */
-    fun approve() = act(R.string.msg_claim_approved) { claim, _, uid -> claims.approve(claim, uid) }
+    /** Claim APPROVED with a pickup code, other pending claims REJECTED, item RETURNED: one update. */
+    fun approve(otherReason: String) = act(R.string.msg_claim_approved) { claim, _, uid ->
+        val otherPending = state.value.allClaims.filter { it.status == ClaimStatus.PENDING && it.claimant != claim.claimant }
+        claims.approve(claim, uid, PickupCode.generate(), otherPending, otherReason)
+    }
 
     /** Claim REJECTED with the reason; item back to TURNED_IN if it was turned in, else OPEN. */
     fun reject(reason: String) = act(R.string.msg_claim_rejected) { claim, item, uid ->
-        claims.reject(claim, uid, reason, item.turnedInAt)
+        val othersPending = state.value.allClaims.any { it.status == ClaimStatus.PENDING && it.claimant != claim.claimant }
+        claims.reject(claim, uid, reason, item.turnedInAt, othersPending)
     }
 
     private fun act(done: Int, action: suspend (Claim, Item, String) -> Unit) {

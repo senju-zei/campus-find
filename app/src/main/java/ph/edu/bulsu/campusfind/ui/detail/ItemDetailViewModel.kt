@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -41,6 +43,8 @@ sealed interface DetailState {
         val canClose: Boolean,
         val canMarkTurnedIn: Boolean,
         val canOverride: Boolean,
+        /** Staff only: the approved claim, to check the pickup code at the CS Office. */
+        val approvedForStaff: Claim? = null,
     ) : DetailState
 }
 
@@ -71,8 +75,20 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
             ServiceLocator.claimRepository.observeMyClaim(itemId, uid).catch { emit(null) }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val approvedClaim: Flow<Claim?> = role.flatMapLatest { r ->
+        if (!r.isStaff) {
+            flowOf(null)
+        } else {
+            ServiceLocator.claimRepository.observeClaimsForItem(itemId)
+                .map { list -> list.firstOrNull { it.status == ClaimStatus.APPROVED } }
+                .catch { emit(null) }
+        }
+    }
+
     /** Live: claims and staff changes made on other phones show without a refresh. */
-    val state: StateFlow<DetailState> = combine(items.observeItem(itemId), role, myClaim) { item, role, claim ->
+    val state: StateFlow<DetailState> =
+        combine(items.observeItem(itemId), role, myClaim, approvedClaim) { item, role, claim, approved ->
         if (item == null) {
             DetailState.Missing
         } else {
@@ -88,6 +104,7 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
                 ),
                 canMarkTurnedIn = role.isStaff && item.type == ItemType.FOUND && item.status == ItemStatus.OPEN,
                 canOverride = role == Role.FACULTY,
+                approvedForStaff = approved,
             )
         }
     }
