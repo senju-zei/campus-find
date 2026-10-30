@@ -67,6 +67,9 @@ Read this first in a new session, together with `Campus_Find.md` (the plan, in t
 
 ## Next: one batch per new session
 Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
+- **Batch 2 also: release retry in `.github/workflows/build.yml`.** The publish step once failed
+  because `gh release delete` got HTTP 500 and then `gh release create` said the tag exists. Wrap the
+  delete in a loop (up to 3 tries, 10 s apart, stop when `gh release view latest` fails) before create.
 - **Batch 2: Trash / Settled tab (staff only).** RETURNED and CLOSED items leave Feed 3 days after
   `updatedAt` (client filter), stay in Profile (Posts/Claims). Staff "Settled" tab lists them; "Delete
   permanently" only for items settled more than 30 days ago, with a confirmation ("removes it for
