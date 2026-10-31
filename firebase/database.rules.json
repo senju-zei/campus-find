@@ -48,6 +48,13 @@
         "$other": { ".validate": false }
       }
     },
+    "itemPhotos": {
+      "$itemId": {
+        ".read": "auth != null && (root.child('items/' + $itemId + '/type').val() === 'LOST' || root.child('items/' + $itemId + '/postedBy').val() === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
+        ".write": "(auth != null && auth.token.email_verified === true && auth.token.email.toLowerCase().matches(/^[^@]+@(ms\\.bulsu\\.edu\\.ph|gmail\\.com)$/) && !data.exists() && newData.parent().parent().child('items/' + $itemId + '/postedBy').val() === auth.uid) || (auth != null && !newData.exists() && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty'))",
+        "$index": { ".validate": "$index.matches(/^[01]$/) && newData.isString() && newData.val().length >= 100 && newData.val().length <= 80000" }
+      }
+    },
     "claims": {
       ".read": "auth != null && (root.child('users/' + auth.uid + '/role').val() === 'clerk' || root.child('users/' + auth.uid + '/role').val() === 'faculty')",
       "$itemId": {

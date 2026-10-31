@@ -1,10 +1,13 @@
 package ph.edu.bulsu.campusfind.data
 
+import android.util.LruCache
+import com.google.firebase.database.DatabaseException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ServerValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import ph.edu.bulsu.campusfind.core.Constants
 import ph.edu.bulsu.campusfind.core.DbPaths
 import ph.edu.bulsu.campusfind.domain.Isbn
 import ph.edu.bulsu.campusfind.domain.Settled
@@ -43,6 +46,26 @@ class ItemRepository(private val root: DatabaseReference) {
         root.child(DbPaths.ITEM_SECRETS).child(itemId).child("hiddenDetail").valueEvents()
             .map { it.getValue(String::class.java) }
 
+    /** Photos never change after posting, so each item's photos download once per app session. */
+    private val photoCache = object : LruCache<String, List<String>>(PHOTO_CACHE_CHARS) {
+        override fun sizeOf(key: String, value: List<String>) = value.sumOf { it.length }.coerceAtLeast(1)
+    }
+
+    /**
+     * Item photos (Base64 JPEG). Lost items: anyone signed in. Found items: the poster and staff
+     * only; everyone else gets an empty list, because the rules refuse the read.
+     */
+    suspend fun getPhotos(itemId: String): List<String> {
+        photoCache.get(itemId)?.let { return it }
+        val photos = try {
+            root.child(DbPaths.ITEM_PHOTOS).child(itemId).readOnce().children.mapNotNull { it.getValue(String::class.java) }
+        } catch (e: DatabaseException) {
+            return emptyList()
+        }
+        photoCache.put(itemId, photos)
+        return photos
+    }
+
     /** Readable only by the poster and staff. */
     suspend fun getHiddenDetail(itemId: String): String? =
         root.child(DbPaths.ITEM_SECRETS).child(itemId).child("hiddenDetail")
@@ -72,6 +95,10 @@ class ItemRepository(private val root: DatabaseReference) {
             put("updatedAt", ServerValue.TIMESTAMP)
         }
         val updates = mutableMapOf<String, Any>("${DbPaths.ITEMS}/$itemId" to item)
+        if (draft.photos.isNotEmpty()) {
+            updates["${DbPaths.ITEM_PHOTOS}/$itemId"] =
+                draft.photos.take(Constants.ITEM_PHOTOS_MAX).withIndex().associate { (i, photo) -> i.toString() to photo }
+        }
         val hidden = draft.hiddenDetail?.trim()
         if (draft.type == ItemType.FOUND && !hidden.isNullOrEmpty()) {
             updates["${DbPaths.ITEM_SECRETS}/$itemId"] = mapOf("hiddenDetail" to hidden)
@@ -102,6 +129,8 @@ class ItemRepository(private val root: DatabaseReference) {
         itemIds.forEach { id ->
             updates["${DbPaths.ITEMS}/$id"] = null
             updates["${DbPaths.ITEM_SECRETS}/$id"] = null
+            updates["${DbPaths.ITEM_PHOTOS}/$id"] = null
+            photoCache.remove(id)
             updates["${DbPaths.CLAIMS}/$id"] = null
         }
         root.updateChildren(updates).awaitWrite()
@@ -128,6 +157,11 @@ class ItemRepository(private val root: DatabaseReference) {
                 "$base/updatedAt" to ServerValue.TIMESTAMP,
             ),
         ).awaitWrite()
+    }
+
+    private companion object {
+        /** About 4 MB of Base64 text. */
+        const val PHOTO_CACHE_CHARS = 4_000_000
     }
 
     private fun MutableMap<String, Any>.putIfNotBlank(key: String, value: String?) {

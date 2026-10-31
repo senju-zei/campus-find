@@ -120,6 +120,8 @@ data class ItemDraft(
     val color: String? = null,
     val brand: String? = null,
     val heldAt: String? = null,
+    /** Base64 JPEG photos (see ProfilePhoto.encodeItem), at most Constants.ITEM_PHOTOS_MAX. */
+    val photos: List<String> = emptyList(),
 )
 
 data class Claim(

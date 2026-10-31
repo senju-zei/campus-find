@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material Symbols Outlined "close", weight 400, on a small surface circle so it shows on any photo. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_avatar_badge" />
+    <item android:bottom="4dp" android:left="4dp" android:right="4dp" android:top="4dp">
+        <vector
+            android:width="16dp"
+            android:height="16dp"
+            android:viewportWidth="960"
+            android:viewportHeight="960">
+            <group android:translateY="960">
+                <path
+                    android:fillColor="@color/text"
+                    android:pathData="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+            </group>
+        </vector>
+    </item>
+</layer-list>

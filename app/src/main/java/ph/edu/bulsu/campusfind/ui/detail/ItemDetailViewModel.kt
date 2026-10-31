@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -89,6 +90,11 @@ class ItemDetailViewModel(handle: SavedStateHandle) : ViewModel() {
                 .catch { emit(null) }
         }
     }
+
+    /** Item photos; empty when there are none or the rules refuse them (others' found items). */
+    val photos: StateFlow<List<String>> = flow { emit(items.getPhotos(itemId)) }
+        .catch { emit(emptyList()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
     /** Own LOST item only: found items that might be it (category, color, place, last 14 days). */
     @OptIn(ExperimentalCoroutinesApi::class)

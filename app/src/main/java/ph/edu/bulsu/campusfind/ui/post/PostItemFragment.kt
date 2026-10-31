@@ -1,6 +1,18 @@
 package ph.edu.bulsu.campusfind.ui.post
 
+import android.content.ActivityNotFoundException
+import android.net.Uri
 import android.os.Bundle
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ph.edu.bulsu.campusfind.ui.common.PhotoStrip
+import ph.edu.bulsu.campusfind.ui.common.ProfilePhoto
+import java.io.File
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,15 +87,27 @@ class PostItemFragment : Fragment() {
         }
         binding.lookUpButton.setOnClickListener { lookUp() }
         binding.postButton.setOnClickListener { submit() }
+        binding.takePhotoButton.setOnClickListener { startCamera() }
+        binding.choosePhotoButton.setOnClickListener {
+            choosePhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
         setUpColors()
         binding.leftElsewhere.setOnCheckedChangeListener { _, _ -> updateSections() }
         updateSections()
 
         collectWhenStarted(viewModel.state) { state ->
-            val busy = state.posting || state.lookingUp
+            val busy = state.posting || state.lookingUp || state.addingPhoto
             binding.progress.visibility = if (busy) View.VISIBLE else View.INVISIBLE
             binding.postButton.isEnabled = !busy
             binding.lookUpButton.isEnabled = !busy
+            // The outlined style has no disabled look, so the buttons hide once two photos are added.
+            binding.photoButtons.visibleIf(state.photos.size < Constants.ITEM_PHOTOS_MAX)
+            binding.takePhotoButton.isEnabled = !busy
+            binding.choosePhotoButton.isEnabled = !busy
+            if (state.photos != shownPhotos) {
+                shownPhotos = state.photos
+                PhotoStrip.bind(binding.photosRow, state.photos) { viewModel.removePhoto(it) }
+            }
             binding.coverPreview.visibleIf(state.coverUrl != null)
             if (state.coverUrl != null) {
                 binding.coverPreview.load(state.coverUrl) {
@@ -117,6 +141,40 @@ class PostItemFragment : Fragment() {
         }
     }
 
+    private var shownPhotos: List<String>? = null
+
+    private val choosePhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) addPhoto(uri)
+    }
+
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { saved ->
+        val uri = viewModel.cameraUri
+        if (saved && uri != null) addPhoto(uri)
+    }
+
+    /** The camera app writes into the app's cache through the FileProvider (res/xml/file_paths.xml). */
+    private fun startCamera() {
+        val context = requireContext()
+        val dir = File(context.cacheDir, "photos").apply { mkdirs() }
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".files", File(dir, "capture.jpg"))
+        viewModel.cameraUri = uri
+        try {
+            takePhoto.launch(uri)
+        } catch (e: ActivityNotFoundException) {
+            showMessage(UiMessage(R.string.error_no_camera))
+        }
+    }
+
+    /** Shrinks the photo off the main thread, then adds it to the post. */
+    private fun addPhoto(uri: Uri) {
+        val context = requireContext().applicationContext
+        viewModel.startAddingPhoto()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val encoded = withContext(Dispatchers.Default) { runCatching { ProfilePhoto.encodeItem(context, uri) }.getOrNull() }
+            viewModel.addPhoto(encoded)
+        }
+    }
+
     private fun selectedType(): ItemType =
         if (binding.typeGroup.checkedButtonId == R.id.typeLost) ItemType.LOST else ItemType.FOUND
 
@@ -124,6 +182,7 @@ class PostItemFragment : Fragment() {
     private fun updateSections() {
         val found = selectedType() == ItemType.FOUND
         binding.hiddenLayout.visibleIf(found)
+        binding.photosHint.setText(if (found) R.string.hint_photos_found else R.string.hint_photos_lost)
         binding.turnInSection.visibleIf(found)
         binding.heldAtLayout.visibleIf(found && binding.leftElsewhere.isChecked)
         val isBook = storedValue(binding.categoryLayout, R.array.categories, Constants.CATEGORIES) ==

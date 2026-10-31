@@ -1,5 +1,6 @@
 package ph.edu.bulsu.campusfind.ui.post
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ph.edu.bulsu.campusfind.R
+import ph.edu.bulsu.campusfind.core.Constants
 import ph.edu.bulsu.campusfind.core.ServiceLocator
 import ph.edu.bulsu.campusfind.domain.CoverUrlBuilder
 import ph.edu.bulsu.campusfind.domain.Isbn
@@ -27,6 +29,9 @@ data class PostUiState(
     val lookingUp: Boolean = false,
     /** Set by a successful look-up when Open Library has a cover. */
     val coverUrl: String? = null,
+    /** Encoded photos to save with the item (kept in memory only; they are large). */
+    val photos: List<String> = emptyList(),
+    val addingPhoto: Boolean = false,
 )
 
 sealed interface PostEvent {
@@ -54,6 +59,26 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
         set(value) {
             handle[KEY_COLOR] = value
         }
+
+    /** Where the camera app writes the photo being taken. */
+    var cameraUri: Uri?
+        get() = handle[KEY_CAMERA]
+        set(value) {
+            handle[KEY_CAMERA] = value
+        }
+
+    fun startAddingPhoto() = _state.update { it.copy(addingPhoto = true) }
+
+    /** [encoded] is null when the picture could not be read. */
+    fun addPhoto(encoded: String?) {
+        _state.update { s ->
+            if (encoded == null || s.photos.size >= Constants.ITEM_PHOTOS_MAX) s.copy(addingPhoto = false)
+            else s.copy(photos = s.photos + encoded, addingPhoto = false)
+        }
+        if (encoded == null) viewModelScope.launch { _events.send(PostEvent.Show(UiMessage(R.string.error_photo_read))) }
+    }
+
+    fun removePhoto(index: Int) = _state.update { s -> s.copy(photos = s.photos.filterIndexed { i, _ -> i != index }) }
 
     /** The fragment checks the ISBN checksum first, so an invalid ISBN never reaches the network. */
     fun lookUp(isbn: String) {
@@ -100,7 +125,7 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
                 if (poster == null) {
                     _events.send(PostEvent.Show(UiMessage(R.string.error_profile_missing)))
                 } else {
-                    val id = items.postItem(draft.copy(coverUrl = _state.value.coverUrl), poster)
+                    val id = items.postItem(draft.copy(coverUrl = _state.value.coverUrl, photos = _state.value.photos), poster)
                     _events.send(PostEvent.Posted(id, draft.type))
                 }
             } catch (e: Exception) {
@@ -120,5 +145,6 @@ class PostItemViewModel(private val handle: SavedStateHandle) : ViewModel() {
         const val KEY_COVER = "coverUrl"
         const val KEY_ISBN = "lookedUpIsbn"
         const val KEY_COLOR = "color"
+        const val KEY_CAMERA = "cameraUri"
     }
 }

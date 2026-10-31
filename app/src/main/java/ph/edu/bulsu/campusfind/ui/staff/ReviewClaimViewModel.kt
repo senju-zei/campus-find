@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -52,6 +53,11 @@ class ReviewClaimViewModel(handle: SavedStateHandle) : ViewModel() {
         claims.observeClaimsForItem(itemId).catch { emit(emptyList()) },
     ) { item, hidden, all -> ReviewState(item, hidden, all.firstOrNull { it.claimant == claimant }, all) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), ReviewState(null, null, null))
+
+    /** The finder's photos, shown beside the hidden detail. */
+    val photos: StateFlow<List<String>> = flow { emit(items.getPhotos(itemId)) }
+        .catch { emit(emptyList()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()

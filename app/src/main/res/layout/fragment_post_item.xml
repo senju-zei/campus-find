@@ -260,6 +260,64 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- FOUND only: where the item should go, or where it is now. -->
+        <!-- Up to two photos. Found item photos are staff only (rules). -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_4"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Widget.CampusFind.FieldLabel"
+                android:layout_marginTop="0dp"
+                android:text="@string/field_photos" />
+
+            <TextView
+                android:id="@+id/photosHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:textAppearance="@style/TextAppearance.CampusFind.Small" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_2"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/photosRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:id="@+id/photoButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_2"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/takePhotoButton"
+                    style="@style/Widget.CampusFind.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_take_photo" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/choosePhotoButton"
+                    style="@style/Widget.CampusFind.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_2"
+                    android:layout_weight="1"
+                    android:text="@string/action_pick_photo" />
+            </LinearLayout>
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/turnInSection"
             style="@style/Widget.CampusFind.Row"

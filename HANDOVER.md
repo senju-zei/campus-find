@@ -106,6 +106,15 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   `users/{uid}/photo` (`ui/common/ProfilePhoto.kt`, ~5-30 KB; no Firebase Storage, which needs Blaze).
   "Remove photo" when one is set. Rules: `photo` string 100-60000 chars, own profile only — **publish
   the rules in the console** (8332 chars). Log out asks "Log out?" first.
+- **Item photos: DONE (owner request).** Post item has Take photo (camera via FileProvider,
+  `res/xml/file_paths.xml`) and Choose photo, up to 2. Each photo: upright, longest side 640 px, JPEG
+  Base64 under 80,000 chars (`ProfilePhoto.encodeItem`, about 7-15 KB in tests), stored in
+  `itemPhotos/{itemId}/{0|1}` with the item in one update; no Firebase Storage, stays on Spark.
+  Rules: Lost photos readable by any signed-in user, Found photos only by the poster and staff;
+  written once with the item by the poster; staff delete them with the item. Shown on Item detail
+  (with "Only the finder and the CS Office see these photos." for Found) and on Review claim beside
+  the hidden detail; tap enlarges. `ItemRepository.getPhotos` reads once and caches per session
+  (photos never change). 62 rules tests. **Publish the rules in the console.**
 - **Next: step 7 tiers 3-7** (Espresso in `app/src/androidTest/`, `qa.yml` on an emulator job).
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 

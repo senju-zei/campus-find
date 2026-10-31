@@ -15,8 +15,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Profile pictures are stored in the Realtime Database as a small square JPEG in Base64
- * (users/{uid}/photo), so no Firebase Storage (paid plan) is needed. About 15 to 30 KB each.
+ * Profile pictures (users/{uid}/photo, small square) and item photos (itemPhotos/{itemId}, up to
+ * 640 px) are stored in the Realtime Database as JPEG in Base64, so no Firebase Storage (paid plan)
+ * is needed.
  */
 object ProfilePhoto {
 
@@ -26,15 +27,30 @@ object ProfilePhoto {
         val side = min(bitmap.width, bitmap.height)
         val square = Bitmap.createBitmap(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side)
         val small = Bitmap.createScaledBitmap(square, Constants.PHOTO_SIZE_PX, Constants.PHOTO_SIZE_PX, true)
+        return compress(small, Constants.PHOTO_MAX_CHARS)
+    }
+
+    /** JPEG in Base64. The rules refuse anything longer than [maxChars]; lower the quality until it fits. */
+    private fun compress(bitmap: Bitmap, maxChars: Int): String {
         var quality = 85
         while (true) {
             val out = ByteArrayOutputStream()
-            small.compress(Bitmap.CompressFormat.JPEG, quality, out)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
             val encoded = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
-            // The rules refuse anything longer; lower the quality until it fits.
-            if (encoded.length <= Constants.PHOTO_MAX_CHARS || quality <= 40) return encoded
+            if (encoded.length <= maxChars || quality <= 25) return encoded
             quality -= 15
         }
+    }
+
+    /** Item photo: upright, longest side ITEM_PHOTO_SIZE_PX, shape kept, JPEG within ITEM_PHOTO_MAX_CHARS. */
+    fun encodeItem(context: Context, uri: Uri): String {
+        val bitmap = decodeUpright(context, uri)
+        val longest = max(bitmap.width, bitmap.height)
+        val scale = min(1f, Constants.ITEM_PHOTO_SIZE_PX.toFloat() / longest)
+        val small = Bitmap.createScaledBitmap(
+            bitmap, (bitmap.width * scale).toInt().coerceAtLeast(1), (bitmap.height * scale).toInt().coerceAtLeast(1), true,
+        )
+        return compress(small, Constants.ITEM_PHOTO_MAX_CHARS)
     }
 
     /** Null if the stored text is not a readable image. */

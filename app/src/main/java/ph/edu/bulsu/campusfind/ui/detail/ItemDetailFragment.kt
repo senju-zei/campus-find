@@ -19,6 +19,8 @@ import ph.edu.bulsu.campusfind.model.ItemStatus
 import androidx.recyclerview.widget.LinearLayoutManager
 import ph.edu.bulsu.campusfind.ui.common.ItemAdapter
 import ph.edu.bulsu.campusfind.ui.common.ItemUi
+import ph.edu.bulsu.campusfind.model.ItemType
+import ph.edu.bulsu.campusfind.ui.common.PhotoStrip
 import ph.edu.bulsu.campusfind.ui.common.NavArgs
 import ph.edu.bulsu.campusfind.ui.common.UiMessage
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
@@ -94,6 +96,10 @@ class ItemDetailFragment : Fragment() {
                 }
             }
         }
+        collectWhenStarted(viewModel.photos) { photos ->
+            binding.photosSection.visibleIf(photos.isNotEmpty())
+            PhotoStrip.bind(binding.photosRow, photos)
+        }
         collectWhenStarted(viewModel.busy) { busy ->
             binding.closeReportButton.isEnabled = !busy
             binding.markTurnedInButton.isEnabled = !busy
@@ -120,6 +126,7 @@ class ItemDetailFragment : Fragment() {
         ItemUi.bindType(binding.typeChip, item.type)
         ItemUi.bindStatus(binding.statusChip, item.status)
         ItemUi.loadPicture(binding.picture, item, R.dimen.badge_size_detail)
+        binding.photosPrivate.visibleIf(item.type == ItemType.FOUND)
 
         binding.postedBy.text = listOf(
             getString(R.string.label_posted_by, item.postedByName),

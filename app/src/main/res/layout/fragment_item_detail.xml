@@ -165,6 +165,41 @@
                 style="@style/Widget.CampusFind.FieldValue" />
         </LinearLayout>
 
+        <!-- Item photos. Found item photos load only for the poster and staff (rules). -->
+        <LinearLayout
+            android:id="@+id/photosSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Widget.CampusFind.FieldLabel"
+                android:text="@string/field_photos" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_2"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/photosRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/photosPrivate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_1"
+                android:text="@string/label_photos_private"
+                android:textAppearance="@style/TextAppearance.CampusFind.Small"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <!-- Own LOST item: found items that might be it. -->
         <LinearLayout
             android:id="@+id/matchesSection"

@@ -37,6 +37,11 @@ object Constants {
     const val PHOTO_SIZE_PX = 256
     const val PHOTO_MAX_CHARS = 60_000
 
+    /** Item photos: longest side in pixels, Base64 length limit (same as the rules), photos per item. */
+    const val ITEM_PHOTO_SIZE_PX = 640
+    const val ITEM_PHOTO_MAX_CHARS = 80_000
+    const val ITEM_PHOTOS_MAX = 2
+
     /** Settled items (RETURNED, CLOSED) leave Feed after this long. */
     const val SETTLED_HIDE_MS = 3L * 24 * 60 * 60 * 1000
     const val CLAIM_DETAILS_MIN = 10
@@ -55,6 +60,7 @@ object DbPaths {
     const val USERS = "users"
     const val ITEMS = "items"
     const val ITEM_SECRETS = "itemSecrets"
+    const val ITEM_PHOTOS = "itemPhotos"
     const val CLAIMS = "claims"
     const val MY_CLAIMS = "myClaims"
 }

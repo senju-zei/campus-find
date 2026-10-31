@@ -410,6 +410,50 @@ describe('Staff never claim; no self-review', () => {
   });
 });
 
+describe('Item photos', () => {
+  const photo = 'B'.repeat(30000);
+  const newFound = () => item({ postedBy: ben.uid, postedByName: ben.name });
+  const newLost = () => item({ type: 'LOST', title: 'Black umbrella', postedBy: ben.uid, postedByName: ben.name });
+
+  test('poster adds up to two photos with a new item in one update: allow', async () => {
+    await assertSucceeds(update(ref(db(ben)), {
+      'items/p1': newFound(),
+      'itemSecrets/p1': { hiddenDetail: 'Sticker inside' },
+      'itemPhotos/p1': { 0: photo, 1: photo },
+    }));
+  });
+
+  test('third photo, oversized photo or photos on someone else item: deny', async () => {
+    await assertFails(update(ref(db(ben)), { 'items/p2': newFound(), 'itemPhotos/p2': { 0: photo, 1: photo, 2: photo } }));
+    await assertFails(update(ref(db(ben)), { 'items/p3': newFound(), 'itemPhotos/p3': { 0: 'B'.repeat(80001) } }));
+    await assertFails(set(ref(db(cara), 'itemPhotos/found1'), { 0: photo }));
+  });
+
+  test('poster cannot replace photos once saved: deny', async () => {
+    await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), 'itemPhotos/found1'), { 0: photo }));
+    await assertFails(set(ref(db(ana), 'itemPhotos/found1'), { 0: 'C'.repeat(30000) }));
+  });
+
+  test('found item photos: poster and staff read, other students deny', async () => {
+    await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), 'itemPhotos/found1'), { 0: photo }));
+    await assertSucceeds(get(ref(db(ana), 'itemPhotos/found1')));
+    await assertSucceeds(get(ref(db(clerk), 'itemPhotos/found1')));
+    await assertFails(get(ref(db(ben), 'itemPhotos/found1')));
+  });
+
+  test('lost item photos: any signed-in user reads', async () => {
+    await assertSucceeds(update(ref(db(ben)), { 'items/l2': newLost(), 'itemPhotos/l2': { 0: photo } }));
+    await assertSucceeds(get(ref(db(cara), 'itemPhotos/l2')));
+    await assertFails(get(ref(env.unauthenticatedContext().database(), 'itemPhotos/l2')));
+  });
+
+  test('staff delete photos with the item: allow; student delete: deny', async () => {
+    await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), 'itemPhotos/found1'), { 0: photo }));
+    await assertFails(remove(ref(db(ana), 'itemPhotos/found1')));
+    await assertSucceeds(update(ref(db(clerk)), { 'items/found1': null, 'itemSecrets/found1': null, 'itemPhotos/found1': null }));
+  });
+});
+
 describe('Deletes (staff Settled, History, student Profile)', () => {
   test('staff delete item, hidden detail and claims in one update: allow', async () => {
     await seedPending();

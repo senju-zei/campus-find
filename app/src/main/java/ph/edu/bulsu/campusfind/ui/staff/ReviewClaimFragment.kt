@@ -11,6 +11,7 @@ import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentReviewClaimBinding
 import ph.edu.bulsu.campusfind.domain.TextRules
 import ph.edu.bulsu.campusfind.model.ClaimStatus
+import ph.edu.bulsu.campusfind.ui.common.PhotoStrip
 import ph.edu.bulsu.campusfind.ui.common.ItemUi
 import ph.edu.bulsu.campusfind.ui.common.check
 import ph.edu.bulsu.campusfind.ui.common.collectWhenStarted
@@ -39,6 +40,10 @@ class ReviewClaimFragment : Fragment() {
         binding.approveButton.setOnClickListener { viewModel.approve(getString(R.string.reason_other_claim_approved)) }
         binding.rejectButton.setOnClickListener { reject() }
 
+        collectWhenStarted(viewModel.photos) { photos ->
+            binding.photosSection.visibleIf(photos.isNotEmpty())
+            PhotoStrip.bind(binding.photosRow, photos)
+        }
         collectWhenStarted(viewModel.state) { state ->
             val context = requireContext()
             val none = getString(R.string.detail_value_none)
