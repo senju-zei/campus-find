@@ -57,7 +57,10 @@ class MyActivityViewModel(private val handle: SavedStateHandle) : ViewModel() {
     /** Swipe-down refresh: bumping it re-subscribes to the database. */
     private val refresh = MutableStateFlow(0)
 
-    fun refresh() = refresh.update { it + 1 }
+    fun refresh() {
+        ServiceLocator.reconnectDatabase()
+        refresh.update { it + 1 }
+    }
 
     /** Profile header: name, email, role and counts. */
     val profile: StateFlow<UserProfile?> = (uid?.let { ServiceLocator.userRepository.observeProfile(it) } ?: flowOf(null))

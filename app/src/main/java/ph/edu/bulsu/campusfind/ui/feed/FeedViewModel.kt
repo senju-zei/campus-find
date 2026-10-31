@@ -5,7 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -65,7 +69,20 @@ class FeedViewModel(private val handle: SavedStateHandle) : ViewModel() {
         handle[KEY_CATEGORY] = stored
     }
 
-    fun refresh() = refresh.update { it + 1 }
+    fun refresh() {
+        ServiceLocator.reconnectDatabase()
+        refresh.update { it + 1 }
+    }
+
+    /** Emits once if the saved sign-in no longer works (account deleted or disabled). */
+    private val _sessionEnded = Channel<Unit>(Channel.CONFLATED)
+    val sessionEnded: Flow<Unit> = _sessionEnded.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            if (!ServiceLocator.authRepository.sessionStillValid()) _sessionEnded.send(Unit)
+        }
+    }
 
     /** Found and Lost tab counts: items Feed shows, before search and category filters. */
     @OptIn(ExperimentalCoroutinesApi::class)

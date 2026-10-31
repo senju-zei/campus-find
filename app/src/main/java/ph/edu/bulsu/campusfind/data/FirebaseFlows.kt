@@ -6,6 +6,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -39,6 +41,7 @@ suspend fun Query.readOnce(timeoutMs: Long = READ_TIMEOUT_MS): DataSnapshot =
 
 private const val READ_TIMEOUT_MS = 15_000L
 private const val WRITE_TIMEOUT_MS = 20_000L
+private const val FIRST_VALUE_TIMEOUT_MS = 20_000L
 
 /**
  * Waits for a database write to be confirmed by the server. Offline, the SDK keeps the write
@@ -50,10 +53,19 @@ suspend fun Task<Void>.awaitWrite(timeoutMs: Long = WRITE_TIMEOUT_MS) {
     withTimeoutOrNull(timeoutMs) { await(); Unit } ?: throw IOException("Database write timed out")
 }
 
-/** Live value updates for a query. The flow fails if the rules deny the read. */
-fun Query.valueEvents(): Flow<DataSnapshot> = callbackFlow {
+/**
+ * Live value updates for a query. The flow fails if the rules deny the read, or with an
+ * IOException if the first value does not arrive in time. Without that, a connection stuck
+ * waiting for a sign-in token (seen after switching accounts) left screens loading forever.
+ */
+fun Query.valueEvents(firstValueTimeoutMs: Long = FIRST_VALUE_TIMEOUT_MS): Flow<DataSnapshot> = callbackFlow {
+    val firstValue = launch {
+        delay(firstValueTimeoutMs)
+        close(IOException("No data from the database"))
+    }
     val listener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
+            firstValue.cancel()
             trySend(snapshot)
         }
 

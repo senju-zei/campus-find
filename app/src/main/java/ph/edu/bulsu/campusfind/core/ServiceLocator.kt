@@ -23,13 +23,22 @@ object ServiceLocator {
             FirebaseAuth.getInstance()
                 .useEmulator(BuildConfig.EMULATOR_HOST, BuildConfig.AUTH_EMULATOR_PORT)
             FirebaseDatabase.getInstance()
-                .useEmulator(BuildConfig.EMULATOR_HOST, BuildConfig.DATABASE_EMULATOR_PORT)
-        }
+                .useEmulator(BuildConfig.EMULATOR_HOST, BuildConfig.DATABASE_EMULATOR_PORT)        }
     }
 
     val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private val databaseRoot by lazy { FirebaseDatabase.getInstance().reference }
+
+    /**
+     * Drops and reopens the database connection so it authenticates again with the current
+     * sign-in. Used after log-in, log-out and pull-to-refresh.
+     */
+    fun reconnectDatabase() {
+        val database = FirebaseDatabase.getInstance()
+        database.goOffline()
+        database.goOnline()
+    }
 
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -39,7 +48,7 @@ object ServiceLocator {
     }
 
     val userRepository by lazy { UserRepository(databaseRoot) }
-    val authRepository by lazy { AuthRepository(auth, userRepository) }
+    val authRepository by lazy { AuthRepository(auth, userRepository, ::reconnectDatabase) }
     val itemRepository by lazy { ItemRepository(databaseRoot) }
     val claimRepository by lazy { ClaimRepository(databaseRoot) }
     val bookLookupRepository by lazy { BookLookupRepository(httpClient) }

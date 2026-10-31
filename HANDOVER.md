@@ -110,6 +110,13 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 
 ## Watch out for
+- Emulator testing: run `adb reverse tcp:9000 tcp:9000` and `adb reverse tcp:9099 tcp:9099` after the
+  Android emulator boots. The Database emulator tells clients its host is 127.0.0.1:9000; after an idle
+  disconnect the SDK reconnects there, which inside the Android emulator is the phone itself, so every
+  screen hung (seen as "Feed stuck after switching accounts"). Real Firebase is not affected.
+- Live lists time out after 20 s with "No connection" (`valueEvents`); pull-to-refresh, log-in and
+  log-out restart the database connection (`ServiceLocator.reconnectDatabase`); a saved sign-in the
+  server rejects (deleted/disabled account, revoked refresh token) signs out to Welcome.
 - Rules tests: run from `qa/rules` (`npm ci`, then `firebase emulators:exec --only database
   --project campus-find-86d58 "npm test"`, JDK 21 on PATH). Port 9010 so a dev emulator on 9000 can stay up.
 - Verification emails come from `noreply@campus-find-86d58.firebaseapp.com` and may land in spam or

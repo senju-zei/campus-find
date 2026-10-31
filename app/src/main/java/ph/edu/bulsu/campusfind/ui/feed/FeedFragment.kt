@@ -95,6 +95,7 @@ class FeedFragment : Fragment() {
         }
 
         collectWhenStarted(viewModel.isStaff) { requireActivity().invalidateMenu() }
+        collectWhenStarted(viewModel.sessionEnded) { findNavController().navigate(R.id.action_global_welcome) }
         collectWhenStarted(viewModel.tabCounts) { (found, lost) ->
             TabCounts.set(binding.tabs.getTabAt(0), R.string.tab_found, found)
             TabCounts.set(binding.tabs.getTabAt(1), R.string.tab_lost, lost)
