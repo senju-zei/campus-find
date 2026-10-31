@@ -1,0 +1,76 @@
+    ok 1 - R1 verified Gmail user writes own profile as student: allow
+    ok 2 - R2 user writes own profile as clerk: deny
+    ok 3 - R2b student promotes self later: deny
+    ok 4 - R3 non-allowed email writes own profile: deny
+    ok 5 - R23 student changes own name after creation: deny
+    ok 6 - student reads another user profile: deny; staff: allow
+ok 1 - Users (R1-R3, R23)
+    ok 1 - student and clerk set and remove their own picture: allow
+    ok 2 - picture over 60000 characters or not text: deny
+    ok 3 - someone else sets my picture: deny (even staff)
+ok 2 - Profile picture
+    ok 1 - R4 verified student creates own OPEN item with its secret in one update: allow
+    ok 2 - R5 student creates an item with status RETURNED: deny
+    ok 3 - R6 unverified student creates an item: deny
+    ok 4 - R7 poster of a FOUND item sets it RETURNED: deny
+    ok 5 - R8 poster of a LOST item closes it, stamping updatedAt: allow
+    ok 6 - R8b another student closes the LOST item: deny
+    ok 7 - R17 postedByName that is not the poster name: deny
+    ok 8 - R21 unknown field: deny
+    ok 9 - R22 coverUrl outside covers.openlibrary.org: deny; inside: allow
+    ok 10 - R25 faculty overrides any item to any valid status: allow
+    ok 11 - R26 status outside the five allowed: deny (even for faculty)
+    ok 12 - R27 any signed-in user reads items: allow; signed out: deny
+    ok 13 - clerk marks a FOUND item TURNED_IN with turnedInAt: allow
+    ok 14 - poster edits own item title after posting: deny (editing is staff only)
+ok 3 - Items (R4-R8, R17, R21, R22, R25-R27)
+    ok 1 - color from the list: allow; unknown color: deny
+    ok 2 - brand up to 60 characters: allow; 61: deny
+    ok 3 - heldAt up to 100 characters: allow; 101: deny
+ok 4 - Item color, brand and heldAt
+    ok 1 - R9 other student reads itemSecrets: deny
+    ok 2 - R10 poster reads own itemSecrets: allow; staff: allow
+    ok 3 - poster rewrites an existing hidden detail: deny
+ok 5 - Hidden details (R9, R10)
+    ok 1 - student claims an OPEN found item in one update: allow
+    ok 2 - R11 other student reads someone else claim: deny
+    ok 3 - R12 clerk reads claims and approves with item RETURNED: allow
+    ok 4 - R13 student sets CLAIM_PENDING with no claim in the same update: deny
+    ok 5 - R14 (changed by the owner) second student claims an item already CLAIM_PENDING: allow
+    ok 6 - R14b claim on a RETURNED item: deny
+    ok 7 - R15 poster claims own FOUND item: deny
+    ok 8 - R16 claim without setting CLAIM_PENDING: deny
+    ok 9 - R18 resubmit after REJECTED: allow
+    ok 10 - R18 resubmit while PENDING or after APPROVED: deny
+    ok 11 - R19 claim a LOST item: deny
+    ok 12 - R20 clerk rejects with no rejectReason: deny; with a reason: allow
+    ok 13 - R24 unverified student claims: deny
+    ok 14 - claim text under 10 characters: deny
+    ok 15 - student writes own claim as APPROVED: deny
+ok 6 - Claims (R11-R16, R18-R20, R24)
+    ok 1 - approve one claim, reject the other, item RETURNED, in one update: allow
+    ok 2 - reject one of two claims keeps the item CLAIM_PENDING: allow
+    ok 3 - pickup code that is not 6 digits: deny
+    ok 4 - student writes a pickupCode into own claim: deny
+    ok 5 - pickup code is readable by the claimant and staff only
+ok 7 - Multiple claims and pickup code
+    ok 1 - clerk claims a found item: deny
+    ok 2 - faculty claims a found item: deny
+    ok 3 - staff approves a claim filed under their own uid: deny
+ok 8 - Staff never claim; no self-review
+    ok 1 - poster adds up to two photos with a new item in one update: allow
+    ok 2 - third photo, oversized photo or photos on someone else item: deny
+    ok 3 - poster cannot replace photos once saved: deny
+    ok 4 - found item photos: poster and staff read, other students deny
+    ok 5 - lost item photos: any signed-in user reads
+    ok 6 - staff delete photos with the item: allow; student delete: deny
+ok 9 - Item photos
+    ok 1 - staff delete item, hidden detail and claims in one update: allow
+    ok 2 - student deletes an item, even their own: deny
+    ok 3 - staff delete one History record: allow; student deletes own claim record: deny
+    ok 4 - student removes a claim from own Profile (myClaims pointer): allow; from another student: deny
+ok 10 - Deletes (staff Settled, History, student Profile)
+# tests 62
+# suites 10
+# pass 62
+# fail 0

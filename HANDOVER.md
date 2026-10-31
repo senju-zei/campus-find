@@ -125,6 +125,10 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   browser pane. Deploy: `.github/workflows/pages.yml` to https://senju-zei.github.io/campus-find/
   after (1) Settings > Pages > Source: GitHub Actions, (2) apiKey and appId from a Firebase Web app
   in `web/config.js` (public by design), (3) `senju-zei.github.io` in Firebase Auth authorized domains.
+  All three done 2026-10-31; live at https://senju-zei.github.io/campus-find/. Later additions: log-in
+  page with a welcome panel (three steps) beside the form, a greeting strip after log-in ("Good
+  morning, Clara. 2 claims to review."), and a **Lost and found** tab (Found/Lost, search, category,
+  optional settled items, Mark turned in) so staff can browse everything like the app Feed.
 - **Next: step 7 tiers 3-7** (Espresso in `app/src/androidTest/`, `qa.yml` on an emulator job).
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 

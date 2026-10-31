@@ -24,20 +24,41 @@
 
   <!-- Log in -->
   <main id="loginView" class="login" hidden>
+    <!-- Welcome panel: what the dashboard is for, in three steps. -->
+    <section class="welcome" aria-labelledby="welcomeTitle">
+      <img src="logo.svg" alt="Campus Find logo, a magnifying glass with an eye" width="96" height="96" class="welcome-logo">
+      <h1 id="welcomeTitle">Every found item, back with its owner.</h1>
+      <p class="welcome-lead">The CS Office dashboard for Campus Find. Review claims on a big screen, then hand items back with a pickup code.</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><div><strong>Compare</strong><span>Each claim sits beside the finder's hidden detail and photos.</span></div></li>
+        <li><span class="step-num">2</span><div><strong>Decide</strong><span>Approve one claim to issue a pickup code, or reject with a reason.</span></div></li>
+        <li><span class="step-num">3</span><div><strong>Hand back</strong><span>Type the student's code in Pickup check before giving the item.</span></div></li>
+      </ol>
+      <span class="chip chip-type">College of Science pilot</span>
+    </section>
+
     <form id="loginForm" class="card login-card" novalidate>
-      <img src="logo.svg" alt="" width="72" height="72" class="login-logo">
-      <h1>CS Office log in</h1>
-      <p class="muted">For clerks and faculty. Students use the Campus Find app.</p>
-      <label>Email<input id="email" type="email" autocomplete="username" required></label>
+      <h2 class="login-title">Welcome back</h2>
+      <p class="muted">Log in with your CS Office account. Students use the Campus Find app on Android.</p>
+      <label>Email<input id="email" type="email" autocomplete="username" placeholder="name@ms.bulsu.edu.ph" required></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
       <p class="error" id="loginError" role="alert"></p>
       <button class="btn-filled" type="submit" id="loginButton">Log in</button>
+      <p class="muted small login-foot">Need staff access? Create an account in the app, then ask the admin to turn on staff access.</p>
     </form>
   </main>
+
+  <!-- Greeting after log-in, once per sign-in. -->
+  <div class="greeting" id="greeting" role="status" hidden>
+    <img src="logo.svg" alt="" width="36" height="36">
+    <div><strong id="greetingTitle"></strong><span id="greetingText"></span></div>
+    <button type="button" class="btn-text" id="greetingClose" aria-label="Dismiss greeting">Dismiss</button>
+  </div>
 
   <!-- Dashboard -->
   <div id="appView" class="layout" hidden>
     <nav class="tabs" aria-label="Sections">
+      <button type="button" data-tab="items" class="tab">Lost and found</button>
       <button type="button" data-tab="claims" class="tab">Claims <span class="count" data-count="claims"></span></button>
       <button type="button" data-tab="turnin" class="tab">To turn in <span class="count" data-count="turnin"></span></button>
       <button type="button" data-tab="pickup" class="tab">Pickup check</button>

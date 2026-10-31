@@ -19,6 +19,8 @@ if (useEmulators) {
 
 const OTHER_APPROVED_REASON = 'Another claim for this item was approved.';
 const WRITE_TIMEOUT_MS = 20000;
+const CATEGORIES = ['Book', 'Bag', 'ID or card', 'Electronics', 'Clothing', 'Keys', 'Other'];
+const SETTLED_HIDE_MS = 3 * 24 * 60 * 60 * 1000;
 const STATUS = {
   OPEN: ['Open', 'chip-neutral'], TURNED_IN: ['Turned in', 'chip-pending'], CLAIM_PENDING: ['Claim pending', 'chip-pending'],
   RETURNED: ['Returned', 'chip-success'], CLOSED: ['Closed', 'chip-neutral'],
@@ -29,6 +31,8 @@ const STATUS = {
 const state = {
   user: null, profile: null, items: {}, claims: {}, tab: 'claims', selected: null,
   checked: new Set(), secrets: new Map(), photos: new Map(), pickupCode: '', unsubscribe: [],
+  loaded: { items: false, claims: false }, greeted: false,
+  browse: { type: 'FOUND', query: '', category: '', settled: false },
 };
 
 // ---------- small DOM helpers (user text always goes in as text, never as HTML) ----------
@@ -126,6 +130,20 @@ const pendingClaims = () => allClaims().filter((c) => c.status === 'PENDING').so
 const turnInItems = () => itemsList().filter((i) => i.type === 'FOUND' && i.status === 'OPEN').sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 const settledAt = (i) => i.updatedAt || i.createdAt || 0;
 const settledItems = () => itemsList().filter((i) => i.status === 'RETURNED' || i.status === 'CLOSED').sort((a, b) => settledAt(b) - settledAt(a));
+/** Lost and found browser: like the app Feed (settled items leave after 3 days unless asked for). */
+function browseItems() {
+  const { type, query, category, settled } = state.browse;
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  return itemsList()
+    .filter((i) => i.type === type)
+    .filter((i) => settled || !((i.status === 'RETURNED' || i.status === 'CLOSED') && Date.now() - settledAt(i) > SETTLED_HIDE_MS))
+    .filter((i) => !category || i.category === category)
+    .filter((i) => {
+      const text = [i.title, i.brand, i.color, i.category, i.location, i.room, i.publicDescription, i.bookAuthors, i.isbn, i.heldAt].filter(Boolean).join(' ').toLowerCase();
+      return words.every((w) => text.includes(w));
+    })
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
 const historyClaims = () => allClaims().filter((c) => c.reviewedBy === state.user?.uid && c.status !== 'PENDING')
   .sort((a, b) => settledAt(state.items[b.itemId] || {}) - settledAt(state.items[a.itemId] || {}));
 
@@ -153,7 +171,7 @@ function render() {
   const counts = { claims: pendingClaims().length, turnin: turnInItems().length, settled: settledItems().length };
   document.querySelectorAll('[data-count]').forEach((c) => { c.textContent = counts[c.dataset.count] || ''; });
   document.title = counts.claims ? `(${counts.claims}) Campus Find Staff` : 'Campus Find Staff';
-  ({ claims: renderClaims, turnin: renderTurnIn, pickup: renderPickup, settled: renderSettled, history: renderHistory })[state.tab]();
+  ({ items: renderBrowse, claims: renderClaims, turnin: renderTurnIn, pickup: renderPickup, settled: renderSettled, history: renderHistory })[state.tab]();
 }
 
 function select(key) {
@@ -225,6 +243,49 @@ function facultyOverride(item) {
 
 function emptyDetail(text) {
   fill($('detail'), h('p', { class: 'empty' }, text));
+}
+
+// Lost and found: every item, like the app Feed, with staff details on the right.
+function renderBrowse() {
+  const b = state.browse;
+  const typeButton = (type, label) => h('button', {
+    type: 'button', 'aria-pressed': b.type === type ? 'true' : 'false',
+    onclick: () => { b.type = type; state.selected = null; render(); },
+  }, `${label} (${itemsList().filter((i) => i.type === type).length})`);
+  const search = h('input', { type: 'search', placeholder: 'Search title, brand, color or place', 'aria-label': 'Search items', value: b.query });
+  search.addEventListener('input', () => {
+    b.query = search.value;
+    const pos = search.selectionStart;
+    render();
+    const again = document.querySelector('#list input[type=search]');
+    again.focus();
+    again.setSelectionRange(pos, pos);
+  });
+  const category = h('select', { 'aria-label': 'Category', onchange: (e) => { b.category = e.target.value; render(); } },
+    h('option', { value: '' }, 'All categories'),
+    CATEGORIES.map((c) => h('option', { value: c, selected: b.category === c }, c)));
+  const settled = h('label', { class: 'check' },
+    h('input', { type: 'checkbox', checked: b.settled, onchange: (e) => { b.settled = e.target.checked; render(); } }),
+    'Include items settled over 3 days ago');
+  const items = browseItems();
+  fill($('list'),
+    listHead('Lost and found'),
+    h('div', { class: 'filters' }, h('div', { class: 'segmented', role: 'group', 'aria-label': 'Type' }, typeButton('FOUND', 'Found'), typeButton('LOST', 'Lost')), search, category, settled),
+    items.length ? items.map((i) => rowButton(i.id, i.title,
+      [i.category, i.location, ago(i.createdAt), i.status === 'OPEN' && i.heldAt ? `Now at: ${i.heldAt}` : null].filter(Boolean).join(' · '), i.status))
+      : h('p', { class: 'empty' }, b.query || b.category ? 'No items match your search.' : `No ${b.type === 'FOUND' ? 'found' : 'lost'} items yet.`));
+  const item = items.find((i) => i.id === state.selected);
+  if (!item) return emptyDetail(items.length ? 'Select an item to see its details.' : '');
+  const action = item.type === 'FOUND' && item.status === 'OPEN' ? h('button', {
+    class: 'btn-filled', type: 'button',
+    onclick: async () => {
+      try {
+        await write({ [`items/${item.id}/status`]: 'TURNED_IN', [`items/${item.id}/turnedInAt`]: serverTimestamp(), [`items/${item.id}/updatedAt`]: serverTimestamp() });
+        toast('Marked as turned in.');
+      } catch (e) { toast(errorText(e)); }
+    },
+  }, 'Mark turned in') : null;
+  renderItemDetail(item, action);
 }
 
 // Claims: oldest first, each beside the finder's hidden detail and photos.
@@ -445,6 +506,27 @@ async function deleteHistory() {
   } catch (e) { toast(errorText(e)); }
 }
 
+// ---------- greeting ----------
+/** Once per sign-in, after items and claims have loaded: hello plus what is waiting. */
+function maybeGreet() {
+  if (state.greeted || !state.loaded.items || !state.loaded.claims || !state.profile) return;
+  state.greeted = true;
+  const hour = new Date().getHours();
+  const part = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const first = String(state.profile.name || '').split(' ')[0];
+  const claims = pendingClaims().length;
+  const turnIn = turnInItems().length;
+  const waiting = [
+    claims ? `${claims} claim${claims === 1 ? '' : 's'} to review` : null,
+    turnIn ? `${turnIn} found item${turnIn === 1 ? '' : 's'} to turn in` : null,
+  ].filter(Boolean);
+  $('greetingTitle').textContent = `${part}, ${first}.`;
+  $('greetingText').textContent = waiting.length ? waiting.join(' · ') + '.' : 'Nothing is waiting right now.';
+  $('greeting').hidden = false;
+}
+
+$('greetingClose').addEventListener('click', () => { $('greeting').hidden = true; });
+
 // ---------- sign-in ----------
 function show(view) {
   $('loginView').hidden = view !== 'login';
@@ -454,7 +536,8 @@ function show(view) {
 
 function stopListening() {
   state.unsubscribe.forEach((u) => u());
-  Object.assign(state, { unsubscribe: [], items: {}, claims: {}, selected: null, profile: null });
+  Object.assign(state, { unsubscribe: [], items: {}, claims: {}, selected: null, profile: null, greeted: false, loaded: { items: false, claims: false } });
+  $('greeting').hidden = true;
   state.checked.clear();
   state.secrets.clear();
   state.photos.clear();
@@ -476,8 +559,8 @@ onAuthStateChanged(auth, async (user) => {
     $('whoRole').textContent = profile.role === 'faculty' ? 'Faculty' : 'Clerk';
     show('app');
     state.unsubscribe.push(
-      onValue(ref(db, 'items'), (s) => { state.items = s.val() || {}; render(); }, (e) => toast(errorText(e))),
-      onValue(ref(db, 'claims'), (s) => { state.claims = s.val() || {}; render(); }, (e) => toast(errorText(e))),
+      onValue(ref(db, 'items'), (s) => { state.items = s.val() || {}; state.loaded.items = true; render(); maybeGreet(); }, (e) => toast(errorText(e))),
+      onValue(ref(db, 'claims'), (s) => { state.claims = s.val() || {}; state.loaded.claims = true; render(); maybeGreet(); }, (e) => toast(errorText(e))),
     );
   } catch (e) {
     $('loginError').textContent = errorText(e);

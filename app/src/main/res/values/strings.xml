@@ -329,6 +329,19 @@
     <string name="label_finder_photos">Finder\'s photos</string>
     <string name="error_no_camera">No camera app found. Choose a photo instead.</string>
 
+    <plurals name="badge_pending_claims">
+        <item quantity="one">%d claim to review</item>
+        <item quantity="other">%d claims to review</item>
+    </plurals>
+
+    <!-- Approve confirmation -->
+    <string name="dialog_approve_title">Approve claim?</string>
+    <string name="dialog_approve_body">%1$s gets a 6-digit pickup code and the item becomes Returned.</string>
+    <plurals name="dialog_approve_others">
+        <item quantity="one">%d other claim on this item will be rejected.</item>
+        <item quantity="other">%d other claims on this item will be rejected.</item>
+    </plurals>
+
     <!-- Stored values are in Constants; these are the labels shown, in the same order. -->
     <string-array name="item_colors">
         <item>Black</item>

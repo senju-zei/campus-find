@@ -1,0 +1,343 @@
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\common\ProfilePhoto.kt:8: Warning: Avoid using android.media.ExifInterface; use androidx.exifinterface.media.ExifInterface instead [ExifInterface]
+import android.media.ExifInterface
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\common\ProfilePhoto.kt:85: Warning: Avoid using android.media.ExifInterface; use androidx.exifinterface.media.ExifInterface instead [ExifInterface]
+            when (ExifInterface(it).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "ExifInterface":
+   The android.media.ExifInterface implementation has some known security bugs
+   in older versions of Android. There is a new implementation available of
+   this library in the support library, which is preferable.
+
+C:\Users\emman\CAMPUS FIND\gradle\wrapper\gradle-wrapper.properties:3: Warning: A newer version of Gradle than 8.13 is available: 8.14.6 [AndroidGradlePluginVersion]
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:2: Warning: A newer version of com.android.application than 8.11.1 is available: 9.5.0. (There is also a newer version of 8.11.𝑥 available, if upgrading to 9.5.0 is difficult: 8.11.2) [AndroidGradlePluginVersion]
+agp = "8.11.1"
+      ~~~~~~~~
+
+   Explanation for issues of type "AndroidGradlePluginVersion":
+   This detector looks for usage of the Android Gradle Plugin where the
+   version you are using is not the current stable release. Using older
+   versions is fine, and there are cases where you deliberately want to stick
+   with an older version. However, you may simply not be aware that a more
+   recent version is available, and that is what this lint check helps find.
+
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:4: Warning: A newer version of com.google.gms.google-services than 4.4.3 is available: 4.5.0 [GradleDependency]
+googleServices = "4.4.3"
+                 ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:5: Warning: A newer version of androidx.core:core-ktx than 1.16.0 is available: 1.19.1 [GradleDependency]
+coreKtx = "1.16.0"
+          ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:6: Warning: A newer version of androidx.appcompat:appcompat than 1.7.1 is available: 1.8.0 [GradleDependency]
+appcompat = "1.7.1"
+            ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:7: Warning: A newer version of androidx.activity:activity-ktx than 1.10.1 is available: 1.13.0 [GradleDependency]
+activity = "1.10.1"
+           ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:8: Warning: A newer version of androidx.fragment:fragment-ktx than 1.8.8 is available: 1.9.1 [GradleDependency]
+fragment = "1.8.8"
+           ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:9: Warning: A newer version of com.google.android.material:material than 1.12.0 is available: 1.14.0 [GradleDependency]
+material = "1.12.0"
+           ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:10: Warning: A newer version of androidx.constraintlayout:constraintlayout than 2.2.1 is available: 2.2.2 [GradleDependency]
+constraintlayout = "2.2.1"
+                   ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:12: Warning: A newer version of androidx.swiperefreshlayout:swiperefreshlayout than 1.1.0 is available: 1.2.0 [GradleDependency]
+swiperefreshlayout = "1.1.0"
+                     ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:13: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.9.2 is available: 2.11.0 [GradleDependency]
+lifecycle = "2.9.2"
+            ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:13: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-ktx than 2.9.2 is available: 2.11.0 [GradleDependency]
+lifecycle = "2.9.2"
+            ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:14: Warning: A newer version of androidx.navigation:navigation-fragment-ktx than 2.9.3 is available: 2.10.2 [GradleDependency]
+navigation = "2.9.3"
+             ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:14: Warning: A newer version of androidx.navigation:navigation-ui-ktx than 2.9.3 is available: 2.10.2 [GradleDependency]
+navigation = "2.9.3"
+             ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:15: Warning: A newer version of androidx.core:core-splashscreen than 1.0.1 is available: 1.2.0 [GradleDependency]
+splashscreen = "1.0.1"
+               ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:17: Warning: A newer version of com.google.firebase:firebase-bom than 33.16.0 is available: 35.1.0 [GradleDependency]
+firebaseBom = "33.16.0"
+              ~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:22: Warning: A newer version of androidx.test.ext:junit than 1.2.1 is available: 1.3.0 [GradleDependency]
+androidxJunit = "1.2.1"
+                ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:23: Warning: A newer version of androidx.test.espresso:espresso-core than 3.6.1 is available: 3.7.0 [GradleDependency]
+espresso = "3.6.1"
+           ~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:3: Warning: A newer version of org.jetbrains.kotlin.android than 2.2.0 is available: 2.4.21 [NewerVersionAvailable]
+kotlin = "2.2.0"
+         ~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:16: Warning: A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-android than 1.10.2 is available: 1.11.0 [NewerVersionAvailable]
+coroutines = "1.10.2"
+             ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:16: Warning: A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-play-services than 1.10.2 is available: 1.11.0 [NewerVersionAvailable]
+coroutines = "1.10.2"
+             ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:19: Warning: A newer version of com.squareup.okhttp3:okhttp than 4.12.0 is available: 5.5.1 [NewerVersionAvailable]
+okhttp = "4.12.0"
+         ~~~~~~~~
+C:\Users\emman\CAMPUS FIND\gradle\libs.versions.toml:21: Warning: A newer version of org.json:json than 20240303 is available: 20260814 [NewerVersionAvailable]
+orgJson = "20240303"
+          ~~~~~~~~~~
+
+   Explanation for issues of type "NewerVersionAvailable":
+   This detector checks with a central repository to see if there are newer
+   versions available for the dependencies used by this project. This is
+   similar to the GradleDependency check, which checks for newer versions
+   available in the Android SDK tools and libraries, but this works with any
+   MavenCentral dependency, and connects to the library every time, which
+   makes it more flexible but also much slower.
+
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:193: Warning: Formatting %d followed by words ("claims"): This should probably be a plural rather than a string [PluralsCandidate]
+    <string name="label_other_claims">%1$d claims on this item</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PluralsCandidate":
+   This lint check looks for potential errors in internationalization where
+   you have translated a message which involves a quantity and it looks like
+   other parts of the string may need grammatical changes.
+
+   For example, rather than something like this:
+     <string name="try_again">Try again in %d seconds.</string>
+   you should be using a plural:
+      <plurals name="try_again">
+           <item quantity="one">Try again in %d second</item>
+           <item quantity="other">Try again in %d seconds</item>
+       </plurals>
+   This will ensure that in other languages the right set of translations are
+   provided for the different quantity classes.
+
+   (This check depends on some heuristics, so it may not accurately determine
+   whether a string really should be a quantity. You can use tools:ignore to
+   filter out false positives.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\activity\MyActivityFragment.kt:112: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+            claimsAdapter.notifyDataSetChanged()
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\activity\MyActivityFragment.kt:228: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+            adapter.notifyDataSetChanged()
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\staff\StaffDashboardFragment.kt:60: Warning: It will always be more efficient to use more specific change events if you can. Rely on notifyDataSetChanged as a last resort. [NotifyDataSetChanged]
+            settledAdapter.notifyDataSetChanged()
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "NotifyDataSetChanged":
+   The RecyclerView adapter's onNotifyDataSetChanged method does not specify
+   what about the data set has changed, forcing any observers to assume that
+   all existing items and structure may no longer be valid. `LayoutManager`s
+   will be forced to fully rebind and relayout all visible views.
+
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\activity_main.xml:18: Warning: This tag and its children can be replaced by one <TextView/> and a compound drawable [UseCompoundDrawables]
+        <LinearLayout
+         ~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\fragment_staff_dashboard.xml:41: Warning: This tag and its children can be replaced by one <TextView/> and a compound drawable [UseCompoundDrawables]
+        <LinearLayout
+         ~~~~~~~~~~~~
+
+   Explanation for issues of type "UseCompoundDrawables":
+   A LinearLayout which contains an ImageView and a TextView can be more
+   efficiently handled as a compound drawable (a single TextView, using the
+   drawableTop, drawableLeft, drawableRight and/or drawableBottom attributes
+   to draw one or more images adjacent to the text).
+
+   If the two widgets are offset from each other with margins, this can be
+   replaced with a drawablePadding attribute.
+
+   There's a lint quickfix to perform this conversion in the Eclipse plugin.
+
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\activity_main.xml:7: Warning: Possible overdraw: Root element paints background @color/background with a theme that also paints a background (inferred theme is @style/Theme.CampusFind) [Overdraw]
+    android:background="@color/background"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\fragment_login.xml:6: Warning: Possible overdraw: Root element paints background @color/background with a theme that also paints a background (inferred theme is @style/Theme.CampusFind) [Overdraw]
+    android:background="@color/background"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\fragment_register.xml:6: Warning: Possible overdraw: Root element paints background @color/background with a theme that also paints a background (inferred theme is @style/Theme.CampusFind) [Overdraw]
+    android:background="@color/background"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\layout\fragment_start.xml:6: Warning: Possible overdraw: Root element paints background @color/background with a theme that also paints a background (inferred theme is @style/Theme.CampusFind) [Overdraw]
+    android:background="@color/background" />
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\colors.xml:23: Warning: The resource R.color.transparent appears to be unused [UnusedResources]
+    <color name="transparent">#00000000</color>
+           ~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\drawable\ic_history.xml:3: Warning: The resource R.drawable.ic_history appears to be unused [UnusedResources]
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+^
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:13: Warning: The resource R.string.title_my_activity appears to be unused [UnusedResources]
+    <string name="title_my_activity">My activity</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:42: Warning: The resource R.string.cd_my_activity appears to be unused [UnusedResources]
+    <string name="cd_my_activity">My activity</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:44: Warning: The resource R.string.cd_more_options appears to be unused [UnusedResources]
+    <string name="cd_more_options">More options</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:105: Warning: The resource R.string.label_hidden_detail appears to be unused [UnusedResources]
+    <string name="label_hidden_detail">Hidden detail: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:107: Warning: The resource R.string.label_claimant appears to be unused [UnusedResources]
+    <string name="label_claimant">Claim by %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:108: Warning: The resource R.string.label_when_where appears to be unused [UnusedResources]
+    <string name="label_when_where">When and where: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\res\values\strings.xml:109: Warning: The resource R.string.label_contact_note appears to be unused [UnusedResources]
+    <string name="label_contact_note">Contact: %1$s</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+   Available options:
+
+   **skip-libraries** (default is true):
+   Whether the unused resource check should skip reporting unused resources in libraries.
+
+   Many libraries will declare resources that are part of the library surface; other modules depending on the library will also reference the resources. To avoid reporting all these resources as unused (in the context of a library), the unused resource check normally skips reporting unused resources in libraries. Instead, run the unused resource check on the consuming app module (along with `checkDependencies=true`).
+
+   However, there are cases where you want to check that all the resources declared in a library are used; in that case, you can disable the skip option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UnusedResources">
+           <option name="skip-libraries" value="true" />
+       </issue>
+   </lint>
+   ```
+
+C:\Users\emman\CAMPUS FIND\app\src\main\res\menu\menu_feed.xml:9: Warning: Prefer "ifRoom" instead of "always" [AlwaysShowAction]
+        app:showAsAction="always" />
+        ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "AlwaysShowAction":
+   Using showAsAction="always" in menu XML, or MenuItem.SHOW_AS_ACTION_ALWAYS
+   in Java code is usually a deviation from the user interface style guide.Use
+   ifRoom or the corresponding MenuItem.SHOW_AS_ACTION_IF_ROOM instead.
+
+   If always is used sparingly there are usually no problems and behavior is
+   roughly equivalent to ifRoom but with preference over other ifRoom items.
+   Using it more than twice in the same menu is a bad idea.
+
+   This check looks for menu XML files that contain more than two always
+   actions, or some always actions and no ifRoom actions. In Java code, it
+   looks for projects that contain references to
+   MenuItem.SHOW_AS_ACTION_ALWAYS and no references to
+   MenuItem.SHOW_AS_ACTION_IF_ROOM.
+
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\common\ProfilePhoto.kt:29: Warning: Use the KTX extension function Bitmap.scale instead? [UseKtx]
+        val small = Bitmap.createScaledBitmap(square, Constants.PHOTO_SIZE_PX, Constants.PHOTO_SIZE_PX, true)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\emman\CAMPUS FIND\app\src\main\java\ph\edu\bulsu\campusfind\ui\common\ProfilePhoto.kt:50: Warning: Use the KTX extension function Bitmap.scale instead? [UseKtx]
+        val small = Bitmap.createScaledBitmap(
+                    ^
+
+   Explanation for issues of type "UseKtx":
+   The Android KTX libraries decorates the Android platform SDK as well as
+   various libraries with more convenient extension functions available from
+   Kotlin, allowing you to use default parameters, named parameters, and
+   more.
+
+   Available options:
+
+   **remove-defaults** (default is true):
+   Whether to skip arguments that match the defaults provided by the extension.
+
+   Extensions often provide default values for some of the parameters. For example:
+   ```kotlin
+   fun Path.readLines(charset: Charset = Charsets.UTF_8): List<String> { return Files.readAllLines(this, charset) }
+   ```
+   This lint check will by default automatically omit parameters that match the default, so if your code was calling
+
+   ```kotlin
+   Files.readAllLines(file, Charset.UTF_8)
+   ```
+   lint would replace this with
+   ```kotlin
+   file.readLines()
+   ```
+   rather than
+
+   ```kotlin
+   file.readLines(Charset.UTF_8
+   ```
+   You can turn this behavior off using this option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="remove-defaults" value="true" />
+       </issue>
+   </lint>
+   ```
+
+   **require-present** (default is true):
+   Whether to only offer extensions already available.
+
+   This option lets you only have lint suggest extension replacements if those extensions are already available on the class path (in other words, you're already depending on the library containing the extension method.)
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="require-present" value="true" />
+       </issue>
+   </lint>
+   ```
+
+0 errors, 47 warnings

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ph.edu.bulsu.campusfind.R
 import ph.edu.bulsu.campusfind.databinding.FragmentReviewClaimBinding
 import ph.edu.bulsu.campusfind.domain.TextRules
@@ -37,7 +38,7 @@ class ReviewClaimFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.reasonInput.doAfterTextChanged { binding.reasonLayout.error = null }
-        binding.approveButton.setOnClickListener { viewModel.approve(getString(R.string.reason_other_claim_approved)) }
+        binding.approveButton.setOnClickListener { confirmApprove() }
         binding.rejectButton.setOnClickListener { reject() }
 
         collectWhenStarted(viewModel.photos) { photos ->
@@ -93,6 +94,28 @@ class ReviewClaimFragment : Fragment() {
         val reason = binding.reasonLayout.text()
         if (!binding.reasonLayout.check(if (TextRules.isValidRejectReason(reason)) null else R.string.error_reject_reason)) return
         viewModel.reject(reason)
+    }
+
+    /**
+     * Approving sets the item Returned and rejects every other pending claim at once, so it asks
+     * first, like the web dashboard.
+     */
+    private fun confirmApprove() {
+        val state = viewModel.state.value
+        val claim = state.claim ?: return
+        val others = state.allClaims.count { it.status == ClaimStatus.PENDING && it.claimant != claim.claimant }
+        val body = buildString {
+            append(getString(R.string.dialog_approve_body, claim.claimantName))
+            if (others > 0) append("\n\n").append(resources.getQuantityString(R.plurals.dialog_approve_others, others, others))
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.dialog_approve_title)
+            .setMessage(body)
+            .setNegativeButton(R.string.action_cancel, null)
+            .setPositiveButton(R.string.action_approve_claim) { _, _ ->
+                viewModel.approve(getString(R.string.reason_other_claim_approved))
+            }
+            .show()
     }
 
     override fun onDestroyView() {

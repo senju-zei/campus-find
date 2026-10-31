@@ -207,6 +207,8 @@ class FeedFragment : Fragment() {
                 maxCharacterCount = 3
                 backgroundColor = ContextCompat.getColor(context, R.color.accent)
                 badgeTextColor = ContextCompat.getColor(context, R.color.on_accent)
+                // Screen readers say "3 claims to review", not Material's default "new notifications".
+                setContentDescriptionQuantityStringsResource(R.plurals.badge_pending_claims)
             }.also { BadgeUtils.attachBadgeDrawable(it, bar, R.id.action_staff_dashboard) }
         }
     }
