@@ -1,5 +1,6 @@
 # Publishes the staff dashboard (web/) to GitHub Pages: https://senju-zei.github.io/campus-find/
-# One-time setup: repository Settings > Pages > Source: GitHub Actions.
+# One-time setup (done 2026-10-31): repository Settings > Pages > Source: GitHub Actions.
+# Do not add GitHub's suggested Jekyll or Static HTML workflow; this one publishes web/.
 name: pages
 
 on:
