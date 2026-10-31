@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Find Staff</title>
+  <meta name="description" content="CS Office dashboard for Campus Find: review claims, turn in items, check pickup codes.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span>Campus Find</span>
+      <img src="logo.svg" alt="" width="28" height="28">
+      <span class="brand-sub">Staff</span>
+    </div>
+    <div class="who" id="who" hidden>
+      <span id="whoName"></span>
+      <span class="chip chip-type" id="whoRole"></span>
+      <button class="btn-text" id="logOut" type="button">Log out</button>
+    </div>
+  </header>
+
+  <!-- Log in -->
+  <main id="loginView" class="login" hidden>
+    <form id="loginForm" class="card login-card" novalidate>
+      <img src="logo.svg" alt="" width="72" height="72" class="login-logo">
+      <h1>CS Office log in</h1>
+      <p class="muted">For clerks and faculty. Students use the Campus Find app.</p>
+      <label>Email<input id="email" type="email" autocomplete="username" required></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
+      <p class="error" id="loginError" role="alert"></p>
+      <button class="btn-filled" type="submit" id="loginButton">Log in</button>
+    </form>
+  </main>
+
+  <!-- Dashboard -->
+  <div id="appView" class="layout" hidden>
+    <nav class="tabs" aria-label="Sections">
+      <button type="button" data-tab="claims" class="tab">Claims <span class="count" data-count="claims"></span></button>
+      <button type="button" data-tab="turnin" class="tab">To turn in <span class="count" data-count="turnin"></span></button>
+      <button type="button" data-tab="pickup" class="tab">Pickup check</button>
+      <button type="button" data-tab="settled" class="tab">Settled <span class="count" data-count="settled"></span></button>
+      <button type="button" data-tab="history" class="tab">History</button>
+    </nav>
+    <section class="list" id="list" aria-label="List"></section>
+    <section class="detail" id="detail" aria-label="Details" aria-live="polite"></section>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <dialog id="dialog">
+    <div class="dialog-body">
+      <h2 id="dialogTitle"></h2>
+      <div id="dialogContent"></div>
+      <div class="dialog-actions">
+        <button class="btn-text" type="button" id="dialogCancel">Cancel</button>
+        <button class="btn-filled" type="button" id="dialogOk">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

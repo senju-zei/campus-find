@@ -115,6 +115,16 @@ Prompt: "Read HANDOVER.md. Do batch N. Ask me before pushing."
   (with "Only the finder and the CS Office see these photos." for Found) and on Review claim beside
   the hidden detail; tap enlarges. `ItemRepository.getPhotos` reads once and caches per session
   (photos never change). 62 rules tests. **Publish the rules in the console.**
+- **Staff PC dashboard: BUILT (owner request), not deployed yet.** `web/` is a static site (plain HTML,
+  CSS and ES modules, Firebase JS SDK 11.10.0 from gstatic; no build step). Tabs: Claims (hidden
+  detail and photos beside the claim, Approve with pickup code, Reject with reason), To turn in,
+  Pickup check (type a code), Settled and History (tick and delete, with the pickup-code warning),
+  faculty Change status. Writes mirror the app's multi-path updates; non-staff accounts are signed
+  out. Opened on localhost it uses the emulators (serve with `python -m http.server 5173` in `web/`).
+  Dialogs resolve from button clicks: the `<dialog>` close event did not fire in the desktop app's
+  browser pane. Deploy: `.github/workflows/pages.yml` to https://senju-zei.github.io/campus-find/
+  after (1) Settings > Pages > Source: GitHub Actions, (2) apiKey and appId from a Firebase Web app
+  in `web/config.js` (public by design), (3) `senju-zei.github.io` in Firebase Auth authorized domains.
 - **Next: step 7 tiers 3-7** (Espresso in `app/src/androidTest/`, `qa.yml` on an emulator job).
 - Later: real item photos (Lost public, Found staff only), notifications, auto-close.
 

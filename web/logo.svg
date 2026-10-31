@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <!-- Campus Find logo: a magnifying glass with an eye (same as the app's ic_logo). -->
+  <path d="M60 60 L82 82" stroke="#2E5E4E" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <circle cx="40" cy="40" r="26" fill="#FFFFFF"/>
+  <path d="M22 40 Q40 24 58 40 Q40 56 22 40 Z" fill="#E4EDE8" stroke="#2E5E4E" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="40" cy="40" r="7" fill="#2E5E4E"/>
+  <circle cx="42.5" cy="37.5" r="2" fill="#FFFFFF"/>
+  <circle cx="40" cy="40" r="26" fill="none" stroke="#2E5E4E" stroke-width="7"/>
+</svg>
